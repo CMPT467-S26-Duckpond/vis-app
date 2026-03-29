@@ -5,7 +5,9 @@ export async function setMapPins(map: L.Map) {
     const response = await $fetch("/api/supplementary/waterBodies");
 
     response.forEach((waterBody) => {
-      L.marker(waterBody.position.reverse() as any).addTo(map);
+      L.marker(waterBody.position.reverse() as any, {})
+        .bindPopup(`<strong>${waterBody.name}</strong>`)
+        .addTo(map);
     });
   } catch (error) {
     console.error("Fuck:", error);
