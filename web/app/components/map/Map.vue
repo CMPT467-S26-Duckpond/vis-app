@@ -37,8 +37,22 @@ onMounted(() => {
   // Leaflet let's you pick a specific set of "map tiles" to use as the background. I played around here: https://leaflet-extras.github.io/leaflet-providers/preview/
   initialMap.value = L.map(map.value);
 
+  const pinLayer = new L.LayerGroup().addTo(initialMap.value);
+  const shapeLayer = new L.LayerGroup().addTo(initialMap.value);
+
   loadMap();
 
-  setMapPins(initialMap.value);
+  setMapPins(pinLayer, initialMap.value, async (event, id) => {
+    shapeLayer.clearLayers();
+    const bodyData = await $fetch(`/api/supplementary/waterBodies/${id}`);
+
+    L.geoJSON(bodyData.geoJSON, {
+      style: {
+        color: "blue",
+        fillColor: "blue",
+        fillOpacity: 0.5
+      }
+    }).addTo(shapeLayer);
+  });
 });
 </script>

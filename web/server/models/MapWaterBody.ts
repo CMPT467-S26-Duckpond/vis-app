@@ -1,4 +1,4 @@
-import { GeoJSON } from "leaflet";
+import { GeoJsonObject } from "geojson";
 import mongoose, { Schema } from "mongoose";
 
 interface IMapFeature {
@@ -7,7 +7,8 @@ interface IMapFeature {
    * Mean position of the feature. Returned as a tuple of [longitude, latitude]
    */
   position: [lng: number, lat: number];
-  geoJSON: GeoJSON;
+  geoJSON: GeoJsonObject;
+  surfaceArea: number;
 }
 
 const MapWaterBody = new Schema<IMapFeature>({
@@ -21,6 +22,10 @@ const MapWaterBody = new Schema<IMapFeature>({
   },
   geoJSON: {
     type: Object,
+    required: true
+  },
+  surfaceArea: {
+    type: Number,
     required: true
   }
 });

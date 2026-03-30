@@ -14,6 +14,7 @@ from pymongo import MongoClient
 import os
 import json
 import subprocess
+from area import area as calculate_area
 
 MONGO_URL = "mongodb://localhost:3001/"
 DATABASE_NAME="467projdata"
@@ -32,6 +33,8 @@ if __name__ == "__main__":
             with open(os.path.join(WATER_BODIES_PATH, filename), encoding="utf-8") as f:
                 data = json.load(f)
 
+                area = calculate_area(data["features"][0]["geometry"])
+
                 allCoordinates = data["features"][0]["geometry"]["coordinates"][0][0]
                 meanCoords = [
                     sum(x) / len(allCoordinates) for x in zip(*allCoordinates)
@@ -40,6 +43,7 @@ if __name__ == "__main__":
                 toUpload = {
                     "name": data["features"][0]["properties"]["name"],
                     "position": meanCoords,
+                    "surfaceArea": area,
                     "geoJSON": data,
                 }
 
