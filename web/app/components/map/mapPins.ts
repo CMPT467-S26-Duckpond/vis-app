@@ -10,7 +10,9 @@ export async function setMapPins(
 
     response.forEach((waterBody) => {
       L.marker(waterBody.position.reverse() as any, {})
-        .bindPopup(`<strong>${waterBody.name}</strong>`)
+        .bindPopup(
+          `<strong>${waterBody.name}</strong> <br> Surface Area: ${waterBody.surfaceArea.toLocaleString()} m²`
+        )
         .addEventListener("click", (a) => {
           a.target.openPopup();
           map.setView(a.latlng, 8);
