@@ -6,7 +6,7 @@
   -->
   <div ref="map" style="height: 500px" />
 
-  {{ test }}
+  {{ activeBodyDataStatus }}
 </template>
 
 <script setup lang="ts">
