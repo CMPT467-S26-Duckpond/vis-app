@@ -11,7 +11,7 @@ interface IMapFeature {
   surfaceArea: number;
 }
 
-const MapWaterBody = new Schema<IMapFeature>({
+export const MapWaterBody = new Schema<IMapFeature>({
   name: {
     type: String,
     required: true

@@ -8,7 +8,7 @@ export default defineEventHandler(async () => {
     {
       surfaceArea: { $gte: appConfig.waterFeatureMinArea }
     },
-    { name: 1, position: 1, _id: 1 }
+    { name: 1, position: 1, surfaceArea: 1, _id: 1 }
   ).lean();
 
   if (!res) {

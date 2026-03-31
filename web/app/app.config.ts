@@ -1,3 +1,3 @@
 export default defineAppConfig({
-  waterFeatureMinArea: 500000000
+  waterFeatureMinArea: 1000000000
 });
