@@ -13,7 +13,8 @@
             <label for="continent-mole"> Continent View </label>
         </div>
         <div id = "mole-container">
-            <Mole :xAxis=4 :yAxis=5 moleId="mole1" props={{bogusData }} />
+            <Mole :xAxis=4 :yAxis=5 moleId="mole1"  />
+            <Mole :xAxis=43 :yAxis=55 moleId="mole2"  />
         </div>
     </div>
 </template>

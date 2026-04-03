@@ -35,7 +35,7 @@ const {xAxis, yAxis, moleId} = defineProps<{
     const svg = ref(null);
 
     const width = 928;
-    const height = 680;
+    const height = 150;
     const drawMole = () => {
         
         console.log("drawing Mole");
@@ -45,10 +45,11 @@ const {xAxis, yAxis, moleId} = defineProps<{
         mole.attr('width', width).attr('height', height)
 
         console.log(`Selected Mole: ${mole}`);
-        mole.append('circle')
+        mole.append('ellipse')
         .attr('cx', xAxis)
         .attr('cy', yAxis)
-        .attr('r', 50)
+        .attr('rx', xAxis)
+        .attr('ry', yAxis)
         .style('fill', 'green');
 
     };

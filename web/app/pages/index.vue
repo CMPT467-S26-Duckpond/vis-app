@@ -28,6 +28,7 @@
       </div>
     </div>
 
+    <MoleView/>
     <!-- Map Section -->
     <div class="flex-grow relative">
       <Map
@@ -99,6 +100,7 @@
 <script setup lang="ts">
 // This is importing our custom Map component that we defined in the components folder
 import Map from "~/components/map/Map.vue";
+import MoleView from "~/components/mole/MoleView.vue";
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 
 const activeAbstraction = ref("Countries");
