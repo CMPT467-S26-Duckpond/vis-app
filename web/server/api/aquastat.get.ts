@@ -2,6 +2,16 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import Papa from 'papaparse';
 
+type Payload = {
+  meta: {
+    targetVariable: string;
+    targetYear: string;
+  };
+  countries: Record<string, any>;
+  regions: Record<string, any>;
+  continents: Record<string, any>;
+};
+
 export default defineEventHandler(async (event) => {
   const csvPath = path.resolve('server', 'data', 'aquastat_water_cleaned.csv');
   const csvContent = await fs.readFile(csvPath, 'utf8');
@@ -23,7 +33,7 @@ export default defineEventHandler(async (event) => {
   const targetVariable = availableVariables.includes(requestedVariable) ? requestedVariable : defaultVariable;
   const targetYear = headerYears.includes(requestedYear) ? requestedYear : defaultYear;
 
-  const payload: any = {
+  const payload: Payload = {
     meta: {
       targetVariable,
       targetYear
