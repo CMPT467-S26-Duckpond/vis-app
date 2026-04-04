@@ -48,11 +48,11 @@
     let heightSubset = ref(null);
 
     
-    const fetchElipseData = () => {
+    const fetchElipseData = async () => {
         
         // Fetch the Height data of the elipse  
-        const widthData :Promise<any> = fetchData(props.targetVariable, props.targetYear);
-        const heightData :Promise<any> = fetchData(props.targetVariableY, props.targetYear);
+        const widthData :Promise<any> = await fetchData(props.targetVariable, props.targetYear);
+        const heightData :Promise<any> = await fetchData(props.targetVariableY, props.targetYear);
         printData(widthData, "Fetched Width Data");
         widthSubset = filterDataByAbstraction(widthData, abstraction);
         heightSubset = filterDataByAbstraction(heightData, abstraction);
