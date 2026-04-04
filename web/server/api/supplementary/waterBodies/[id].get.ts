@@ -18,7 +18,5 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  console.log(body);
-
   return body;
 });

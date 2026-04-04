@@ -7,6 +7,8 @@
   <div ref="map" style="height: 500px" />
 
   {{ activeBodyDataStatus }}
+
+  <UButton @click="updateMap">Refresh</UButton>
 </template>
 
 <script setup lang="ts">
@@ -66,13 +68,13 @@ const { data: activeBodyData, status: activeBodyDataStatus } = useAsyncData(
   }
 );
 
-watch(activeBodyData, async (newValue) => {
-  if (!newValue) return;
+function updateMap() {
+  if (!activeBodyData.value) return;
 
   shapeLayer.clearLayers();
   depthLayer.clearLayers();
 
-  L.geoJSON(newValue.geoJSON, {
+  L.geoJSON(activeBodyData.value.geoJSON, {
     style: {
       color: "blue",
       fillColor: "blue",
@@ -81,6 +83,12 @@ watch(activeBodyData, async (newValue) => {
   }).addTo(shapeLayer);
 
   // Chonky boi
-  mapVolumeTest(newValue._id, depthLayer);
+  mapVolumeTest(activeBodyData.value._id, depthLayer);
+}
+
+watch(activeBodyData, async (newValue) => {
+  if (!newValue) return;
+
+  updateMap();
 });
 </script>
