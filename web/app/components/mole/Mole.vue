@@ -14,25 +14,25 @@
 // const {a,b,c} = defineProps({a:type, b:type, c:type});
 
 
-const {xAxis, yAxis, moleId} = defineProps<{ 
+const {data, xPos, yPos, xAxis, yAxis, moleId} = defineProps<{ 
+    data: any,
+    xPos: number, 
+    yPos: number, 
     xAxis: number, 
     yAxis: number, 
     moleId: string }>();
 
-    
-    import {
-        fetchCsv,
-        getLatestYearWaterUsage,
-        WATER_VARIABLES,
-        type ParsedCsv,
-    } from "./dataUtils";
+    console.log(`data = ${data}`);
+
     
     // import TimeSlider from "./timeSlider/TimeSlider.vue"; // STEAL BEA'S SLIDER
     
     import * as d3 from "d3";
     import { ref, onMounted, useTemplateRef } from "vue";
+    import {getContinentFeature, getCountryFeature, getRegionFeature} from "~/components/mole/dataUtils";
     
     const svg = ref(null);
+    
 
     const width = 928;
     const height = 150;
@@ -46,8 +46,8 @@ const {xAxis, yAxis, moleId} = defineProps<{
 
         console.log(`Selected Mole: ${mole}`);
         mole.append('ellipse')
-        .attr('cx', xAxis)
-        .attr('cy', yAxis)
+        .attr('cx', xPos)
+        .attr('cy', yPos)
         .attr('rx', xAxis)
         .attr('ry', yAxis)
         .style('fill', 'green');

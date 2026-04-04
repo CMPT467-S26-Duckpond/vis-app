@@ -17,6 +17,12 @@
             {{ variable }}
           </option>
         </select>
+        <span class="font-semibold text-gray-700">Compairison Variable:</span>
+        <select v-model="targetVariableY" class="border p-2 rounded max-w-xl">
+          <option v-for="variable in optionData?.variables || []" :key="variable" :value="variable">
+            {{ variable }}
+          </option>
+        </select>
         <label class="flex items-center gap-2 cursor-pointer ml-4">
           <input type="checkbox" v-model="showPins" class="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500" />
           <span class="text-sm font-medium text-gray-700">Show Lake Pins</span> 
@@ -28,7 +34,11 @@
       </div>
     </div>
 
-    <MoleView/>
+    <MoleView
+        :abstraction="activeAbstraction"
+        :target-variable-x="targetVariable"
+        :target-variable-y="targetVariableY"
+        :target-year="targetYear"/>
     <!-- Map Section -->
     <div class="flex-grow relative">
       <Map
@@ -107,6 +117,7 @@ const activeAbstraction = ref("Countries");
 const showPins = ref(true);
 const selectedMapArea = ref<string | null>(null);
 const targetVariable = ref("");
+const targetVariableY = ref("");
 const targetYear = ref("");
 const isPlaying = ref(false);
 const showTimelineControls = ref(false);

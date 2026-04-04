@@ -1,0 +1,1903 @@
+{
+  "meta": {
+    "targetVariable": "Total water withdrawal per capita [m3/inhab/year]",
+    "targetYear": "2000"
+  },
+  "countries": {
+    "AFG": {
+      "name": "Afghanistan",
+      "value": 1007.569326,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "AFG"
+    },
+    "ALB": {
+      "name": "Albania",
+      "value": 580.4529668,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "ALB"
+    },
+    "DZA": {
+      "name": "Algeria",
+      "value": 182.8278045,
+      "region": "Northern Africa",
+      "continent": "Africa",
+      "iso3": "DZA"
+    },
+    "AGO": {
+      "name": "Angola",
+      "value": 39.54956351,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "AGO"
+    },
+    "ATG": {
+      "name": "Antigua and Barbuda",
+      "value": 97.0027054,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "ATG"
+    },
+    "ARG": {
+      "name": "Argentina",
+      "value": 818.4591308,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "ARG"
+    },
+    "ARM": {
+      "name": "Armenia",
+      "value": 663.6426344,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "ARM"
+    },
+    "AUS": {
+      "name": "Australia",
+      "value": 1139.319641,
+      "region": "Australia and New Zealand",
+      "continent": "Oceania",
+      "iso3": "AUS"
+    },
+    "AUT": {
+      "name": "Austria",
+      "value": 454.0509758,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "AUT"
+    },
+    "AZE": {
+      "name": "Azerbaijan",
+      "value": 1344.377864,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "AZE"
+    },
+    "BHR": {
+      "name": "Bahrain",
+      "value": 517.4303609,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "BHR"
+    },
+    "BGD": {
+      "name": "Bangladesh",
+      "value": -1,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "BGD"
+    },
+    "BRB": {
+      "name": "Barbados",
+      "value": 309.0859831,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "BRB"
+    },
+    "BLR": {
+      "name": "Belarus",
+      "value": 183.8597189,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "BLR"
+    },
+    "BEL": {
+      "name": "Belgium",
+      "value": 735.0573567,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "BEL"
+    },
+    "BLZ": {
+      "name": "Belize",
+      "value": 419.4369578,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "BLZ"
+    },
+    "BEN": {
+      "name": "Benin",
+      "value": 18.46514117,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "BEN"
+    },
+    "BTN": {
+      "name": "Bhutan",
+      "value": -1,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "BTN"
+    },
+    "BOL": {
+      "name": "Bolivia (Plurinational State of)",
+      "value": 228.6983465,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "BOL"
+    },
+    "BWA": {
+      "name": "Botswana",
+      "value": 115.6564217,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "BWA"
+    },
+    "BRA": {
+      "name": "Brazil",
+      "value": 322.667249,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "BRA"
+    },
+    "BRN": {
+      "name": "Brunei Darussalam",
+      "value": 281.8420214,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "BRN"
+    },
+    "BGR": {
+      "name": "Bulgaria",
+      "value": 766.5751726,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "BGR"
+    },
+    "BFA": {
+      "name": "Burkina Faso",
+      "value": 58.91740489,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "BFA"
+    },
+    "BDI": {
+      "name": "Burundi",
+      "value": 44.51180289,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "BDI"
+    },
+    "CPV": {
+      "name": "Cabo Verde",
+      "value": 216.4415909,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "CPV"
+    },
+    "KHM": {
+      "name": "Cambodia",
+      "value": -1,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "KHM"
+    },
+    "CMR": {
+      "name": "Cameroon",
+      "value": 64.80412477,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "CMR"
+    },
+    "CAN": {
+      "name": "Canada",
+      "value": 1312.397769,
+      "region": "Northern America",
+      "continent": "Americas",
+      "iso3": "CAN"
+    },
+    "CAF": {
+      "name": "Central African Republic",
+      "value": 17.2691928,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "CAF"
+    },
+    "TCD": {
+      "name": "Chad",
+      "value": 91.55288443,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "TCD"
+    },
+    "CHL": {
+      "name": "Chile",
+      "value": 1866.751157,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "CHL"
+    },
+    "CHN": {
+      "name": "China",
+      "value": 423.2304014,
+      "region": "Eastern Asia",
+      "continent": "Asia",
+      "iso3": "CHN"
+    },
+    "COL": {
+      "name": "Colombia",
+      "value": 198.1584313,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "COL"
+    },
+    "COM": {
+      "name": "Comoros",
+      "value": 18.65393225,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "COM"
+    },
+    "COG": {
+      "name": "Congo",
+      "value": 14.34308208,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "COG"
+    },
+    "CRI": {
+      "name": "Costa Rica",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "CRI"
+    },
+    "HRV": {
+      "name": "Croatia",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "HRV"
+    },
+    "CUB": {
+      "name": "Cuba",
+      "value": 471.3545925,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "CUB"
+    },
+    "CYP": {
+      "name": "Cyprus",
+      "value": 205.2408705,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "CYP"
+    },
+    "CZE": {
+      "name": "Czechia",
+      "value": 226.6881897,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "CZE"
+    },
+    "CIV": {
+      "name": "Côte d'Ivoire",
+      "value": 79.5976994,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "CIV"
+    },
+    "PRK": {
+      "name": "Democratic People's Republic of Korea",
+      "value": 361.5157837,
+      "region": "Eastern Asia",
+      "continent": "Asia",
+      "iso3": "PRK"
+    },
+    "COD": {
+      "name": "Democratic Republic of the Congo",
+      "value": 11.5646324,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "COD"
+    },
+    "DNK": {
+      "name": "Denmark",
+      "value": 139.4440118,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "DNK"
+    },
+    "DJI": {
+      "name": "Djibouti",
+      "value": 25.42425045,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "DJI"
+    },
+    "DMA": {
+      "name": "Dominica",
+      "value": 242.2968574,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "DMA"
+    },
+    "DOM": {
+      "name": "Dominican Republic",
+      "value": 566.7395526,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "DOM"
+    },
+    "ECU": {
+      "name": "Ecuador",
+      "value": 738.3046662,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "ECU"
+    },
+    "EGY": {
+      "name": "Egypt",
+      "value": 934.5502318,
+      "region": "Northern Africa",
+      "continent": "Africa",
+      "iso3": "EGY"
+    },
+    "SLV": {
+      "name": "El Salvador",
+      "value": 231.5018123,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "SLV"
+    },
+    "GNQ": {
+      "name": "Equatorial Guinea",
+      "value": 24.74124778,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "GNQ"
+    },
+    "ERI": {
+      "name": "Eritrea",
+      "value": 183.9761,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "ERI"
+    },
+    "EST": {
+      "name": "Estonia",
+      "value": 1064.470102,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "EST"
+    },
+    "SWZ": {
+      "name": "Eswatini",
+      "value": 1000.562696,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "SWZ"
+    },
+    "ETH": {
+      "name": "Ethiopia",
+      "value": -1,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "ETH"
+    },
+    "FJI": {
+      "name": "Fiji",
+      "value": 97.15676726,
+      "region": "Melanesia",
+      "continent": "Oceania",
+      "iso3": "FJI"
+    },
+    "FIN": {
+      "name": "Finland",
+      "value": 453.3414668,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "FIN"
+    },
+    "FRA": {
+      "name": "France",
+      "value": 549.965641,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "FRA"
+    },
+    "GAB": {
+      "name": "Gabon",
+      "value": 94.31063084,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "GAB"
+    },
+    "GMB": {
+      "name": "Gambia",
+      "value": 62.19572203,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "GMB"
+    },
+    "GEO": {
+      "name": "Georgia",
+      "value": 442.5542742,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "GEO"
+    },
+    "DEU": {
+      "name": "Germany",
+      "value": 549.2760953,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "DEU"
+    },
+    "GHA": {
+      "name": "Ghana",
+      "value": 50.00741709,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "GHA"
+    },
+    "GRC": {
+      "name": "Greece",
+      "value": 942.7484562,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "GRC"
+    },
+    "GRD": {
+      "name": "Grenada",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "GRD"
+    },
+    "GTM": {
+      "name": "Guatemala",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "GTM"
+    },
+    "GIN": {
+      "name": "Guinea",
+      "value": 68.61906506,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "GIN"
+    },
+    "GNB": {
+      "name": "Guinea-Bissau",
+      "value": 141.730128,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "GNB"
+    },
+    "GUY": {
+      "name": "Guyana",
+      "value": 2144.261746,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "GUY"
+    },
+    "HTI": {
+      "name": "Haiti",
+      "value": 161.8266883,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "HTI"
+    },
+    "HND": {
+      "name": "Honduras",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "HND"
+    },
+    "HUN": {
+      "name": "Hungary",
+      "value": 583.1583355,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "HUN"
+    },
+    "ISL": {
+      "name": "Iceland",
+      "value": 579.4937429,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "ISL"
+    },
+    "IND": {
+      "name": "India",
+      "value": 576.9797557,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "IND"
+    },
+    "IDN": {
+      "name": "Indonesia",
+      "value": 524.2926633,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "IDN"
+    },
+    "IRN": {
+      "name": "Iran (Islamic Republic of)",
+      "value": 1332.456893,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "IRN"
+    },
+    "IRQ": {
+      "name": "Iraq",
+      "value": 2702.253876,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "IRQ"
+    },
+    "IRL": {
+      "name": "Ireland",
+      "value": 263.6779171,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "IRL"
+    },
+    "ISR": {
+      "name": "Israel",
+      "value": 314.8322994,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "ISR"
+    },
+    "ITA": {
+      "name": "Italy",
+      "value": 792.4060278,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "ITA"
+    },
+    "JAM": {
+      "name": "Jamaica",
+      "value": 337.8292877,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "JAM"
+    },
+    "JPN": {
+      "name": "Japan",
+      "value": 711.9701973,
+      "region": "Eastern Asia",
+      "continent": "Asia",
+      "iso3": "JPN"
+    },
+    "JOR": {
+      "name": "Jordan",
+      "value": 151.6629555,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "JOR"
+    },
+    "KAZ": {
+      "name": "Kazakhstan",
+      "value": 1354.871328,
+      "region": "Central Asia",
+      "continent": "Asia",
+      "iso3": "KAZ"
+    },
+    "KEN": {
+      "name": "Kenya",
+      "value": 50.90652601,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "KEN"
+    },
+    "KWT": {
+      "name": "Kuwait",
+      "value": 429.4884814,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "KWT"
+    },
+    "KGZ": {
+      "name": "Kyrgyzstan",
+      "value": 2005.912267,
+      "region": "Central Asia",
+      "continent": "Asia",
+      "iso3": "KGZ"
+    },
+    "LAO": {
+      "name": "Lao People's Democratic Republic",
+      "value": -1,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "LAO"
+    },
+    "LVA": {
+      "name": "Latvia",
+      "value": 127.7280495,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "LVA"
+    },
+    "LBN": {
+      "name": "Lebanon",
+      "value": 330.9973345,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "LBN"
+    },
+    "LSO": {
+      "name": "Lesotho",
+      "value": 21.85723632,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "LSO"
+    },
+    "LBR": {
+      "name": "Liberia",
+      "value": 44.67034616,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "LBR"
+    },
+    "LBY": {
+      "name": "Libya",
+      "value": 815.4538879,
+      "region": "Northern Africa",
+      "continent": "Africa",
+      "iso3": "LBY"
+    },
+    "LTU": {
+      "name": "Lithuania",
+      "value": 858.901349,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "LTU"
+    },
+    "LUX": {
+      "name": "Luxembourg",
+      "value": 136.0096985,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "LUX"
+    },
+    "MDG": {
+      "name": "Madagascar",
+      "value": 809.4772582,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "MDG"
+    },
+    "MWI": {
+      "name": "Malawi",
+      "value": 109.2485274,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "MWI"
+    },
+    "MYS": {
+      "name": "Malaysia",
+      "value": 238.9430497,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "MYS"
+    },
+    "MDV": {
+      "name": "Maldives",
+      "value": 22.69350647,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "MDV"
+    },
+    "MLI": {
+      "name": "Mali",
+      "value": 417.4905844,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "MLI"
+    },
+    "MLT": {
+      "name": "Malta",
+      "value": 142.5076464,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "MLT"
+    },
+    "MRT": {
+      "name": "Mauritania",
+      "value": 612.6788399,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "MRT"
+    },
+    "MUS": {
+      "name": "Mauritius",
+      "value": 501.3853854,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "MUS"
+    },
+    "MEX": {
+      "name": "Mexico",
+      "value": 691.4078026,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "MEX"
+    },
+    "MCO": {
+      "name": "Monaco",
+      "value": 184.8713603,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "MCO"
+    },
+    "MNG": {
+      "name": "Mongolia",
+      "value": 198.8885925,
+      "region": "Eastern Asia",
+      "continent": "Asia",
+      "iso3": "MNG"
+    },
+    "MNE": {
+      "name": "Montenegro",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "MNE"
+    },
+    "MAR": {
+      "name": "Morocco",
+      "value": 443.6479812,
+      "region": "Northern Africa",
+      "continent": "Africa",
+      "iso3": "MAR"
+    },
+    "MOZ": {
+      "name": "Mozambique",
+      "value": 48.01876993,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "MOZ"
+    },
+    "MMR": {
+      "name": "Myanmar",
+      "value": 733.5986541,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "MMR"
+    },
+    "NAM": {
+      "name": "Namibia",
+      "value": 164.9577955,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "NAM"
+    },
+    "NPL": {
+      "name": "Nepal",
+      "value": 389.5665978,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "NPL"
+    },
+    "NLD": {
+      "name": "Netherlands (Kingdom of the)",
+      "value": 526.2000304,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "NLD"
+    },
+    "NZL": {
+      "name": "New Zealand",
+      "value": 623.9895111,
+      "region": "Australia and New Zealand",
+      "continent": "Oceania",
+      "iso3": "NZL"
+    },
+    "NIC": {
+      "name": "Nicaragua",
+      "value": 276.3452859,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "NIC"
+    },
+    "NER": {
+      "name": "Niger",
+      "value": 75.39773216,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "NER"
+    },
+    "NGA": {
+      "name": "Nigeria",
+      "value": 81.546104,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "NGA"
+    },
+    "MKD": {
+      "name": "North Macedonia",
+      "value": 336.370879,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "MKD"
+    },
+    "NOR": {
+      "name": "Norway",
+      "value": 535.8685273,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "NOR"
+    },
+    "OMN": {
+      "name": "Oman",
+      "value": 595.9342387,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "OMN"
+    },
+    "PAK": {
+      "name": "Pakistan",
+      "value": 1114.159173,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "PAK"
+    },
+    "PAN": {
+      "name": "Panama",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "PAN"
+    },
+    "PNG": {
+      "name": "Papua New Guinea",
+      "value": 49.01514593,
+      "region": "Melanesia",
+      "continent": "Oceania",
+      "iso3": "PNG"
+    },
+    "PRY": {
+      "name": "Paraguay",
+      "value": 96.06208198,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "PRY"
+    },
+    "PER": {
+      "name": "Peru",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "PER"
+    },
+    "PHL": {
+      "name": "Philippines",
+      "value": -1,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "PHL"
+    },
+    "POL": {
+      "name": "Poland",
+      "value": 321.9540874,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "POL"
+    },
+    "PRT": {
+      "name": "Portugal",
+      "value": 1037.543072,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "PRT"
+    },
+    "PRI": {
+      "name": "Puerto Rico",
+      "value": 1018.802236,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "PRI"
+    },
+    "QAT": {
+      "name": "Qatar",
+      "value": 455.6666858,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "QAT"
+    },
+    "KOR": {
+      "name": "Republic of Korea",
+      "value": 551.1832457,
+      "region": "Eastern Asia",
+      "continent": "Asia",
+      "iso3": "KOR"
+    },
+    "MDA": {
+      "name": "Republic of Moldova",
+      "value": 328.4602175,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "MDA"
+    },
+    "ROU": {
+      "name": "Romania",
+      "value": 437.7159266,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "ROU"
+    },
+    "RUS": {
+      "name": "Russian Federation",
+      "value": 462.7737788,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "RUS"
+    },
+    "RWA": {
+      "name": "Rwanda",
+      "value": 18.26165815,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "RWA"
+    },
+    "KNA": {
+      "name": "Saint Kitts and Nevis",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "KNA"
+    },
+    "LCA": {
+      "name": "Saint Lucia",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "LCA"
+    },
+    "VCT": {
+      "name": "Saint Vincent and the Grenadines",
+      "value": 84.40608471,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "VCT"
+    },
+    "STP": {
+      "name": "Sao Tome and Principe",
+      "value": 120.2446313,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "STP"
+    },
+    "SAU": {
+      "name": "Saudi Arabia",
+      "value": 1292.932342,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "SAU"
+    },
+    "SEN": {
+      "name": "Senegal",
+      "value": 159.5062729,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "SEN"
+    },
+    "SRB": {
+      "name": "Serbia",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "SRB"
+    },
+    "SYC": {
+      "name": "Seychelles",
+      "value": 154.8284884,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "SYC"
+    },
+    "SLE": {
+      "name": "Sierra Leone",
+      "value": 42.70266983,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "SLE"
+    },
+    "SGP": {
+      "name": "Singapore",
+      "value": 468.5124447,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "SGP"
+    },
+    "SVK": {
+      "name": "Slovakia",
+      "value": 217.7509698,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "SVK"
+    },
+    "SVN": {
+      "name": "Slovenia",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "SVN"
+    },
+    "SOM": {
+      "name": "Somaliland",
+      "value": 0,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "SOM"
+    },
+    "ZAF": {
+      "name": "South Africa",
+      "value": 271.2484356,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "ZAF"
+    },
+    "SSD": {
+      "name": "South Sudan",
+      "value": -1,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "SSD"
+    },
+    "ESP": {
+      "name": "Spain",
+      "value": 890.7898907,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "ESP"
+    },
+    "LKA": {
+      "name": "Sri Lanka",
+      "value": 674.3670546,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "LKA"
+    },
+    "SDN": {
+      "name": "Sudan",
+      "value": -1,
+      "region": "Northern Africa",
+      "continent": "Africa",
+      "iso3": "SDN"
+    },
+    "SUR": {
+      "name": "Suriname",
+      "value": 1405.664197,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "SUR"
+    },
+    "SWE": {
+      "name": "Sweden",
+      "value": 302.9722047,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "SWE"
+    },
+    "CHE": {
+      "name": "Switzerland",
+      "value": 352.7836206,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "CHE"
+    },
+    "SYR": {
+      "name": "Syrian Arab Republic",
+      "value": 905.8842084,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "SYR"
+    },
+    "TJK": {
+      "name": "Tajikistan",
+      "value": 2006.289844,
+      "region": "Central Asia",
+      "continent": "Asia",
+      "iso3": "TJK"
+    },
+    "THA": {
+      "name": "Thailand",
+      "value": -1,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "THA"
+    },
+    "TLS": {
+      "name": "Timor-Leste",
+      "value": -1,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "TLS"
+    },
+    "TGO": {
+      "name": "Togo",
+      "value": 33.00884151,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "TGO"
+    },
+    "TTO": {
+      "name": "Trinidad and Tobago",
+      "value": 237.9195226,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "TTO"
+    },
+    "TUN": {
+      "name": "Tunisia",
+      "value": 270.3551022,
+      "region": "Northern Africa",
+      "continent": "Africa",
+      "iso3": "TUN"
+    },
+    "TKM": {
+      "name": "Turkmenistan",
+      "value": 5435.054663,
+      "region": "Central Asia",
+      "continent": "Asia",
+      "iso3": "TKM"
+    },
+    "TUR": {
+      "name": "Türkiye",
+      "value": 601.7488898,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "TUR"
+    },
+    "UGA": {
+      "name": "Uganda",
+      "value": 13.7332475,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "UGA"
+    },
+    "UKR": {
+      "name": "Ukraine",
+      "value": 368.8707027,
+      "region": "Eastern Europe",
+      "continent": "Europe",
+      "iso3": "UKR"
+    },
+    "ARE": {
+      "name": "United Arab Emirates",
+      "value": 831.2688292,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "ARE"
+    },
+    "GBR": {
+      "name": "United Kingdom of Great Britain and Northern Ireland",
+      "value": 275.5909294,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "GBR"
+    },
+    "TZA": {
+      "name": "United Republic of Tanzania",
+      "value": 124.3226859,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "TZA"
+    },
+    "USA": {
+      "name": "United States of America",
+      "value": 1986.968139,
+      "region": "Northern America",
+      "continent": "Americas",
+      "iso3": "USA"
+    },
+    "URY": {
+      "name": "Uruguay",
+      "value": 1120.566186,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "URY"
+    },
+    "UZB": {
+      "name": "Uzbekistan",
+      "value": 2429.465225,
+      "region": "Central Asia",
+      "continent": "Asia",
+      "iso3": "UZB"
+    },
+    "VEN": {
+      "name": "Venezuela (Bolivarian Republic of)",
+      "value": 369.5603992,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "VEN"
+    },
+    "VNM": {
+      "name": "Viet Nam",
+      "value": 930.7876424,
+      "region": "South-eastern Asia",
+      "continent": "Asia",
+      "iso3": "VNM"
+    },
+    "YEM": {
+      "name": "Yemen",
+      "value": 173.2559912,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "YEM"
+    },
+    "ZMB": {
+      "name": "Zambia",
+      "value": 161.0660245,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "ZMB"
+    },
+    "ZWE": {
+      "name": "Zimbabwe",
+      "value": 320.1297,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "ZWE"
+    },
+    "ALA": {
+      "name": "Åland Islands",
+      "value": -1,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "ALA"
+    },
+    "ASM": {
+      "name": "American Samoa",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "ASM"
+    },
+    "AND": {
+      "name": "Andorra",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "AND"
+    },
+    "AIA": {
+      "name": "Anguilla",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "AIA"
+    },
+    "ATA": {
+      "name": "Antarctica",
+      "value": -1,
+      "region": "",
+      "continent": "",
+      "iso3": "ATA"
+    },
+    "ABW": {
+      "name": "Aruba",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "ABW"
+    },
+    "BHS": {
+      "name": "Bahamas",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "BHS"
+    },
+    "BMU": {
+      "name": "Bermuda",
+      "value": -1,
+      "region": "Northern America",
+      "continent": "Americas",
+      "iso3": "BMU"
+    },
+    "BES": {
+      "name": "Bonaire, Sint Eustatius and Saba",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "BES"
+    },
+    "BIH": {
+      "name": "Bosnia and Herzegovina",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "BIH"
+    },
+    "BVT": {
+      "name": "Bouvet Island",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "BVT"
+    },
+    "IOT": {
+      "name": "British Indian Ocean Territory",
+      "value": -1,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "IOT"
+    },
+    "CYM": {
+      "name": "Cayman Islands",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "CYM"
+    },
+    "CXR": {
+      "name": "Christmas Island",
+      "value": -1,
+      "region": "Australia and New Zealand",
+      "continent": "Oceania",
+      "iso3": "CXR"
+    },
+    "CCK": {
+      "name": "Cocos (Keeling) Islands",
+      "value": -1,
+      "region": "Australia and New Zealand",
+      "continent": "Oceania",
+      "iso3": "CCK"
+    },
+    "COK": {
+      "name": "Cook Islands",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "COK"
+    },
+    "CUW": {
+      "name": "Curaçao",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "CUW"
+    },
+    "FLK": {
+      "name": "Falkland Islands (Malvinas)",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "FLK"
+    },
+    "FRO": {
+      "name": "Faroe Islands",
+      "value": -1,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "FRO"
+    },
+    "GUF": {
+      "name": "French Guiana",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "GUF"
+    },
+    "PYF": {
+      "name": "French Polynesia",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "PYF"
+    },
+    "ATF": {
+      "name": "French Southern Territories",
+      "value": -1,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "ATF"
+    },
+    "GIB": {
+      "name": "Gibraltar",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "GIB"
+    },
+    "GRL": {
+      "name": "Greenland",
+      "value": -1,
+      "region": "Northern America",
+      "continent": "Americas",
+      "iso3": "GRL"
+    },
+    "GLP": {
+      "name": "Guadeloupe",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "GLP"
+    },
+    "GUM": {
+      "name": "Guam",
+      "value": -1,
+      "region": "Micronesia",
+      "continent": "Oceania",
+      "iso3": "GUM"
+    },
+    "GGY": {
+      "name": "Guernsey",
+      "value": -1,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "GGY"
+    },
+    "HMD": {
+      "name": "Heard Island and McDonald Islands",
+      "value": -1,
+      "region": "Australia and New Zealand",
+      "continent": "Oceania",
+      "iso3": "HMD"
+    },
+    "VAT": {
+      "name": "Holy See",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "VAT"
+    },
+    "HKG": {
+      "name": "Hong Kong",
+      "value": -1,
+      "region": "Eastern Asia",
+      "continent": "Asia",
+      "iso3": "HKG"
+    },
+    "IMN": {
+      "name": "Isle of Man",
+      "value": -1,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "IMN"
+    },
+    "JEY": {
+      "name": "Jersey",
+      "value": -1,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "JEY"
+    },
+    "KIR": {
+      "name": "Kiribati",
+      "value": -1,
+      "region": "Micronesia",
+      "continent": "Oceania",
+      "iso3": "KIR"
+    },
+    "LIE": {
+      "name": "Liechtenstein",
+      "value": -1,
+      "region": "Western Europe",
+      "continent": "Europe",
+      "iso3": "LIE"
+    },
+    "MAC": {
+      "name": "Macao",
+      "value": -1,
+      "region": "Eastern Asia",
+      "continent": "Asia",
+      "iso3": "MAC"
+    },
+    "MHL": {
+      "name": "Marshall Islands",
+      "value": -1,
+      "region": "Micronesia",
+      "continent": "Oceania",
+      "iso3": "MHL"
+    },
+    "MTQ": {
+      "name": "Martinique",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "MTQ"
+    },
+    "MYT": {
+      "name": "Mayotte",
+      "value": -1,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "MYT"
+    },
+    "FSM": {
+      "name": "Micronesia, Federated States of",
+      "value": -1,
+      "region": "Micronesia",
+      "continent": "Oceania",
+      "iso3": "FSM"
+    },
+    "MSR": {
+      "name": "Montserrat",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "MSR"
+    },
+    "NRU": {
+      "name": "Nauru",
+      "value": -1,
+      "region": "Micronesia",
+      "continent": "Oceania",
+      "iso3": "NRU"
+    },
+    "NCL": {
+      "name": "New Caledonia",
+      "value": -1,
+      "region": "Melanesia",
+      "continent": "Oceania",
+      "iso3": "NCL"
+    },
+    "NIU": {
+      "name": "Niue",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "NIU"
+    },
+    "NFK": {
+      "name": "Norfolk Island",
+      "value": -1,
+      "region": "Australia and New Zealand",
+      "continent": "Oceania",
+      "iso3": "NFK"
+    },
+    "MNP": {
+      "name": "Northern Mariana Islands",
+      "value": -1,
+      "region": "Micronesia",
+      "continent": "Oceania",
+      "iso3": "MNP"
+    },
+    "PLW": {
+      "name": "Palau",
+      "value": -1,
+      "region": "Micronesia",
+      "continent": "Oceania",
+      "iso3": "PLW"
+    },
+    "PSE": {
+      "name": "Palestine, State of",
+      "value": -1,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "PSE"
+    },
+    "PCN": {
+      "name": "Pitcairn",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "PCN"
+    },
+    "REU": {
+      "name": "Réunion",
+      "value": -1,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "REU"
+    },
+    "BLM": {
+      "name": "Saint Barthélemy",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "BLM"
+    },
+    "SHN": {
+      "name": "Saint Helena, Ascension and Tristan da Cunha",
+      "value": -1,
+      "region": "Sub-Saharan Africa",
+      "continent": "Africa",
+      "iso3": "SHN"
+    },
+    "MAF": {
+      "name": "Saint Martin (French part)",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "MAF"
+    },
+    "SPM": {
+      "name": "Saint Pierre and Miquelon",
+      "value": -1,
+      "region": "Northern America",
+      "continent": "Americas",
+      "iso3": "SPM"
+    },
+    "WSM": {
+      "name": "Samoa",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "WSM"
+    },
+    "SMR": {
+      "name": "San Marino",
+      "value": -1,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "SMR"
+    },
+    "SXM": {
+      "name": "Sint Maarten (Dutch part)",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "SXM"
+    },
+    "SLB": {
+      "name": "Solomon Islands",
+      "value": -1,
+      "region": "Melanesia",
+      "continent": "Oceania",
+      "iso3": "SLB"
+    },
+    "SGS": {
+      "name": "South Georgia and the South Sandwich Islands",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "SGS"
+    },
+    "SJM": {
+      "name": "Svalbard and Jan Mayen",
+      "value": -1,
+      "region": "Northern Europe",
+      "continent": "Europe",
+      "iso3": "SJM"
+    },
+    "TWN": {
+      "name": "Taiwan",
+      "value": -1,
+      "region": "Eastern Asia",
+      "continent": "Asia",
+      "iso3": "TWN"
+    },
+    "TKL": {
+      "name": "Tokelau",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "TKL"
+    },
+    "TON": {
+      "name": "Tonga",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "TON"
+    },
+    "TCA": {
+      "name": "Turks and Caicos Islands",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "TCA"
+    },
+    "TUV": {
+      "name": "Tuvalu",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "TUV"
+    },
+    "UMI": {
+      "name": "United States Minor Outlying Islands",
+      "value": -1,
+      "region": "Micronesia",
+      "continent": "Oceania",
+      "iso3": "UMI"
+    },
+    "VUT": {
+      "name": "Vanuatu",
+      "value": -1,
+      "region": "Melanesia",
+      "continent": "Oceania",
+      "iso3": "VUT"
+    },
+    "VGB": {
+      "name": "Virgin Islands (British)",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "VGB"
+    },
+    "VIR": {
+      "name": "Virgin Islands (U.S.)",
+      "value": -1,
+      "region": "Latin America and the Caribbean",
+      "continent": "Americas",
+      "iso3": "VIR"
+    },
+    "WLF": {
+      "name": "Wallis and Futuna",
+      "value": -1,
+      "region": "Polynesia",
+      "continent": "Oceania",
+      "iso3": "WLF"
+    },
+    "ESH": {
+      "name": "Western Sahara",
+      "value": -1,
+      "region": "Northern Africa",
+      "continent": "Africa",
+      "iso3": "ESH"
+    },
+    "KOS": {
+      "name": "Kosovo",
+      "value": 0,
+      "region": "Southern Europe",
+      "continent": "Europe",
+      "iso3": "KOS"
+    },
+    "NNC": {
+      "name": "Northern Cyprus",
+      "value": 0,
+      "region": "Western Asia",
+      "continent": "Asia",
+      "iso3": "NNC"
+    },
+    "BAY": {
+      "name": "Baykonur Cosmodrome",
+      "value": 0,
+      "region": "Central Asia",
+      "continent": "Asia",
+      "iso3": "BAY"
+    },
+    "SIA": {
+      "name": "Siachen Glacier",
+      "value": 0,
+      "region": "Southern Asia",
+      "continent": "Asia",
+      "iso3": "SIA"
+    }
+  },
+  "regions": {
+    "Southern Asia": {
+      "name": "Southern Asia",
+      "totalValue": 5117.792306570001,
+      "count": 7,
+      "value": 731.1131866528573
+    },
+    "Southern Europe": {
+      "name": "Southern Europe",
+      "totalValue": 4722.8189389,
+      "count": 7,
+      "value": 674.6884198428571
+    },
+    "Northern Africa": {
+      "name": "Northern Africa",
+      "totalValue": 2646.8350076000006,
+      "count": 5,
+      "value": 529.3670015200001
+    },
+    "Sub-Saharan Africa": {
+      "name": "Sub-Saharan Africa",
+      "totalValue": 7171.808628810002,
+      "count": 46,
+      "value": 155.90888323500005
+    },
+    "Latin America and the Caribbean": {
+      "name": "Latin America and the Caribbean",
+      "totalValue": 14455.10895989,
+      "count": 25,
+      "value": 578.2043583956
+    },
+    "Western Asia": {
+      "name": "Western Asia",
+      "totalValue": 12051.183254649999,
+      "count": 18,
+      "value": 669.5101808138888
+    },
+    "Australia and New Zealand": {
+      "name": "Australia and New Zealand",
+      "totalValue": 1763.3091521000001,
+      "count": 2,
+      "value": 881.6545760500001
+    },
+    "Western Europe": {
+      "name": "Western Europe",
+      "totalValue": 3488.2147786,
+      "count": 8,
+      "value": 436.026847325
+    },
+    "Eastern Europe": {
+      "name": "Eastern Europe",
+      "totalValue": 3897.8070995,
+      "count": 10,
+      "value": 389.78070994999996
+    },
+    "South-eastern Asia": {
+      "name": "South-eastern Asia",
+      "totalValue": 3177.9764756,
+      "count": 6,
+      "value": 529.6627459333333
+    },
+    "Northern America": {
+      "name": "Northern America",
+      "totalValue": 3299.3659079999998,
+      "count": 2,
+      "value": 1649.6829539999999
+    },
+    "Central Asia": {
+      "name": "Central Asia",
+      "totalValue": 13231.593326999999,
+      "count": 5,
+      "value": 2646.3186653999996
+    },
+    "Eastern Asia": {
+      "name": "Eastern Asia",
+      "totalValue": 2246.7882206,
+      "count": 5,
+      "value": 449.35764412
+    },
+    "Northern Europe": {
+      "name": "Northern Europe",
+      "totalValue": 4601.4883005,
+      "count": 10,
+      "value": 460.14883005
+    },
+    "Melanesia": {
+      "name": "Melanesia",
+      "totalValue": 146.17191319,
+      "count": 2,
+      "value": 73.085956595
+    }
+  },
+  "continents": {
+    "Asia": {
+      "name": "Asia",
+      "totalValue": 35825.33358441999,
+      "count": 41,
+      "value": 873.7886240102437
+    },
+    "Europe": {
+      "name": "Europe",
+      "totalValue": 16710.329117499994,
+      "count": 35,
+      "value": 477.4379747857141
+    },
+    "Africa": {
+      "name": "Africa",
+      "totalValue": 9818.64363641,
+      "count": 51,
+      "value": 192.52242424333335
+    },
+    "Americas": {
+      "name": "Americas",
+      "totalValue": 17754.474867890003,
+      "count": 27,
+      "value": 657.5731432551853
+    },
+    "Oceania": {
+      "name": "Oceania",
+      "totalValue": 1909.48106529,
+      "count": 4,
+      "value": 477.3702663225
+    }
+  }
+}

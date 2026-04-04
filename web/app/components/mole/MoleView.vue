@@ -4,17 +4,11 @@
         <h2>
             Mole Viz
         </h2>
-        <div>
-            <input type="radio" class="mole-view" id="world-mole" name="world" @click="(event) => loadMoleData(event)"  />
-            <label for="world-mole"> World View </label>
-            <input type="radio" class="mole-view" id="region-mole" name="region"  />
-            <label for="region-mole"> Region View </label>
-            <input type="radio" class="mole-view" id="continent-mole" name="continent"  />
-            <label for="continent-mole"> Continent View </label>
-        </div>
         <div id = "mole-container">
-            <Mole :xAxis=4 :yAxis=5 moleId="mole1"  />
-            <Mole :xAxis=43 :yAxis=55 moleId="mole2"  />
+            <!-- Idea: moleId = abstraction_name + "mole" -->
+            <!-- <Mole :xPos=5 :yPos=5 :xAxis=25 :yAxis=5 moleId="mole1"  />
+            <Mole :xPos=5 :yPos=5 :xAxis=25 :yAxis=55 moleId="mole2"  /> -->
+            <Mole v-for="data in widthSubset || []" :data=widthData :xPos=5 :yPos=5 :xAxis=25 :yAxis=55 moleId="mole2"  />
         </div>
     </div>
 </template>
@@ -25,84 +19,64 @@
     // Level drop down
 
     import Mole from "~/components/mole/Mole.vue";
+    import {filterDataByAbstraction, fetchData, printData} from "~/components/mole/dataUtils";
+    
+    const xStart = 10;
+    const yStart = 10;
 
-    const worldData = ref([
-        { id: 1, title: 'My journey with Vue' },
-        { id: 2, title: 'Blogging with Vue' },
-        { id: 3, title: 'Why Vue is so fun' }
-    ])
+    const xPos = ref(xStart);
+    const yPos = ref(yStart);
+    const moleValues = ref();
+    
+    
+    
+    const props = defineProps<{
+        abstraction?: string;
+        targetVariable?: string;
+        targetVariableY?: string;
+        targetYear?: string;
+    }>();
+    const abstraction = props.abstraction || "Countries";
 
-    const regionData = ref([
-        { id: 1, title: 'My journey with Vue' },
-        { id: 2, title: 'Blogging with Vue' },
-        { id: 3, title: 'Why Vue is so fun' }
-    ])
+    // Fetch the Width data of the elipse
+    // Makes an HTTP request with targetVariable and targetYear as variables 
+    // i.e /api/aquastat?targetVariable=...&targetYear=...
+    
+    // Call fetch data and extract values   
 
-    const contiData = ref([
-        { id: 1, title: 'My journey with Vue' },
-        { id: 2, title: 'Blogging with Vue' },
-        { id: 3, title: 'Why Vue is so fun' }
-    ])
+    let widthSubset = ref(null);
+    let heightSubset = ref(null);
 
-    const bogusData = ref({"data":[34,53,66]});
-    import {
-        fetchCsv,
-        getLatestYearWaterUsage,
-        WATER_VARIABLES,
-        type ParsedCsv,
-    } from "./dataUtils";
-
-    // bogusData.forEach((data) => console.log(data)
-    //     //TODO: Dynamically create a mole view based on the number of countries/area is in the selected level hierarchy.
-    // );
-
-
-    function loadMoleData(event: Event){
-        console.log(event);
-
+    
+    const fetchElipseData = () => {
+        
+        // Fetch the Height data of the elipse  
+        const widthData :Promise<any> = fetchData(props.targetVariable, props.targetYear);
+        const heightData :Promise<any> = fetchData(props.targetVariableY, props.targetYear);
+        printData(widthData, "Fetched Width Data");
+        widthSubset = filterDataByAbstraction(widthData, abstraction);
+        heightSubset = filterDataByAbstraction(heightData, abstraction);
     };
 
-    // import TimeSlider from "./timeSlider/TimeSlider.vue"; // STEAL BEA'S SLIDER
+
+    //TODO: Dynamically create a mole view based on the number of countries/area is in the selected level hierarchy.
+    console.log(`aqua stat data width = ${widthSubset.value}`);
 
     import * as d3 from "d3";
     import { ref, onMounted, useTemplateRef } from "vue";
-    const data = d3.csvParse("/aquastat_water_cleaned.csv")
-
-    console.log("Data: = " + data)
-    data.forEach((row) => console.log(row));
     
     const width = 640;
     const height = 400;
     const svg = d3.create("svg")
     .attr("width", width)
     .attr("height", height);
+    
+    //console.log(`Value = ${aquastatDataHeight.value}`);
+    console.log(`widthSubset = ${widthSubset}`);
 
-    // Beas prototype work below: 
-    // const csvData = ref<ParsedCsv>();
-
-    // const allCountries = computed(() => {
-    // if (!csvData.value) return [];
-
-    // const countries = new Set<string>();
-
-    //     csvData.value.forEach((row) => {
-    //         countries.add(row.country);
-    //     });
-
-    // return Array.from(countries);
-    // });
-
-    // const selectedCountries = ref<string[]>(["Canada"]);
-    // const selectedVariables = ref<(keyof typeof WATER_VARIABLES)[]>([
-    //     "Agricultural",
-    //     "Industrial",
-    //     "Municipal",
-    // ]);
-
-
-
-
-
+    //Lifecycle Hooks
+    onMounted(fetchElipseData);
+    watch(props,fetchElipseData);
     
 </script>
 

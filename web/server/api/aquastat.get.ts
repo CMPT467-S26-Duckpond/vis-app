@@ -105,7 +105,7 @@ export default defineEventHandler(async (event) => {
   payload.countries['BAY'] = { name: 'Baykonur Cosmodrome', value: 0, region: 'Central Asia', continent: 'Asia', iso3: 'BAY' };
   payload.countries['SIA'] = { name: 'Siachen Glacier', value: 0, region: 'Southern Asia', continent: 'Asia', iso3: 'SIA' };
 
-  // Taiwan (TWN) has empty region and continent values
+  // Taiwan (TWN) has empty region and continent values 
   if (payload.countries['TWN']) {
     payload.countries['TWN'].name = 'Taiwan';
     payload.countries['TWN'].region = 'Eastern Asia';
