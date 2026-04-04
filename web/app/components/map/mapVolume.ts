@@ -3,8 +3,8 @@ import * as L from "leaflet";
 type RGB = [r: number, g: number, b: number];
 
 const gradient: [RGB, RGB] = [
-  [255, 0, 0],
-  [0, 255, 0]
+  [0, 255, 0],
+  [255, 0, 0]
 ];
 
 function getColorForDepth(depth: number, maxDepth: number): string {
@@ -25,6 +25,8 @@ export async function mapVolumeTest(id: string, layer: L.LayerGroup) {
 
   if (!depth) return;
 
+  const minDepth = Math.min(...depth.z);
+
   for (let i = 0; i < depth.longitude.length; i++) {
     const point = {
       longitude: depth.longitude[i]!,
@@ -33,7 +35,7 @@ export async function mapVolumeTest(id: string, layer: L.LayerGroup) {
     };
 
     L.circle([point.latitude, point.longitude], {
-      color: getColorForDepth(point.z, 300),
+      color: getColorForDepth(point.z, minDepth),
       radius: 2
     })
       .bindPopup(`<strong>${point.z}</strong>`)

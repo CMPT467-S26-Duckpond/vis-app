@@ -143,7 +143,14 @@ function filterAndMergeBathymetryData(
 
   // To determine which points are on the edge, we map the coordinates into an 2D array, then find all points that do not have 4 (8?) neighbours.
   const shoreline = getShorelineHeight(mergedData);
-  console.log("Shoreline height:", shoreline);
+
+  // Adjust all points z-value to be relative to the shoreline, clamped at 0 (none of the points should be above sea level)
+  mergedData.z = mergedData.z.map((z) => Math.min(z - shoreline, 0));
+
+  const volume =
+    mergedData.z.reduce((acc, z) => acc + Math.abs(z) * 500 * 500, 0) * 10; // Each point represents a 500m x 500m area, so we can multiply the depth by that to get a volume, then sum it all up
+
+  console.log("Estimated volume (cubic meters):", volume);
 
   return mergedData;
 }
@@ -191,18 +198,18 @@ function getShorelineHeight(bathymetry: BathymetryResponse): number {
   const grid: number[][] = [];
   let nextRow: number[] = Array(uniqueLng.length).fill(NaN);
 
-  let lastLngId = -1;
+  let lastLngIndex = -1;
   for (const point of sorted) {
-    const lngId = uniqueLng.findIndex((lng) => lng === point.lng);
+    const longIndex = uniqueLng.findIndex((lng) => lng === point.lng);
 
-    if (lngId <= lastLngId) {
+    if (longIndex <= lastLngIndex) {
       grid.push(nextRow);
       nextRow = Array(uniqueLng.length).fill(NaN);
-      lastLngId = -1;
+      lastLngIndex = -1;
     }
 
-    nextRow[lngId] = point.z;
-    lastLngId = lngId;
+    nextRow[longIndex] = point.z;
+    lastLngIndex = longIndex;
   }
   grid.push(nextRow);
 
