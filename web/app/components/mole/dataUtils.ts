@@ -4,32 +4,34 @@ import * as d3 from "d3";
 export function filterDataByAbstraction(stats : any , abstraction: string){
     console.log(`Calling filterDataByAbstraction(${stats}, ${abstraction})`);
 
-    if (stats === null) {
-      console.log("WARNING: stats == null ");
-      console.log(`STATS DATA: ${JSON.stringify(stats, null, 2)}`);
+    if (stats === undefined) {
+      console.log("\t WARNING: stats == undefined ");
+      
+      return undefined;
     }else{
-      console.log(JSON.stringify(stats, null, 2));
+      console.log(`\t Stats =  ${stats}`);
     }
 
     if (abstraction === "Countries") {
       const countries = stats.countries;
-      console.log(`Getting countries: ${JSON.stringify(countries, null, 2)}`);
+      
       return countries;
     }
     if (abstraction === "Continents") {
       const continent = stats.continents;
-      console.log(`Getting Continents: ${JSON.stringify(continent, null, 2)}`);
+      
       return continent;
     }
     if (abstraction === "Regions") {
       const region = stats.region;
-      console.log(`Getting Regions: ${JSON.stringify(region, null, 2)}`);
+      
       return region;
     }
     return null;
 };
 
 // Composable useFetch Docs: https://nuxt.com/docs/4.x/api/composables/use-fetch
+// https://nuxt.com/docs/4.x/getting-started/data-fetching
 export async function fetchData(theTargetVariable : any, theTargetYear: any){
   // Fetch the Height data of the elipse
   const { data: aquastatData, status: dataStatus, error: dataError } =  useFetch("/api/aquastat", {
@@ -39,12 +41,11 @@ export async function fetchData(theTargetVariable : any, theTargetYear: any){
       }
   });
 
-  if(dataError.value === undefined){
-    console.log(`SUCCESS useFetch() returned ok: ${aquastatData.value}`);
-    console.log(`FETCHED DATA: ${JSON.stringify(aquastatData.value, null, 2)}`);
+  if(dataError.value === undefined && aquastatData !== undefined){
+    console.log(`\t SUCCESS useFetch() returned ok: ${aquastatData.value}`);
     return aquastatData.value;
   }
-  console.log(`WARNING useFetch() returned an error: ${dataError.value}`);
+  console.log(`\t WARNING useFetch() returned an error: ${dataError.value}`);
   return undefined;
 
 };

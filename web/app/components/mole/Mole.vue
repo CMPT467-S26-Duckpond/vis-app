@@ -14,11 +14,10 @@
 // const {a,b,c} = defineProps({a:type, b:type, c:type});
 
 
-const {data, xPos, yPos, xAxis, yAxis, moleId} = defineProps<{ 
+const {data, xPos, yPos, yAxis, moleId} = defineProps<{ 
     data: any,
     xPos: number, 
     yPos: number, 
-    xAxis: number, 
     yAxis: number, 
     moleId: string }>();
 
@@ -29,7 +28,7 @@ const {data, xPos, yPos, xAxis, yAxis, moleId} = defineProps<{
     
     import * as d3 from "d3";
     import { ref, onMounted, useTemplateRef } from "vue";
-    import {getContinentFeature, getCountryFeature, getRegionFeature} from "~/components/mole/dataUtils";
+    import {getContinentFeature, getCountryFeature, getRegionFeature, printData} from "~/components/mole/dataUtils";
     
     const svg = ref(null);
     
@@ -37,24 +36,28 @@ const {data, xPos, yPos, xAxis, yAxis, moleId} = defineProps<{
     const width = 928;
     const height = 150;
     const drawMole = () => {
-        
+        printData(data,"moleData");
+        if(data.value !=-1){
+            
+            const mole = d3.select(svg.value); // How to reference a prop in script vue
+            mole.attr('width', width).attr('height', height);
+            
+            console.log(`xValue == ${data.value}`);
+            const xAxis = 25;
+            mole.append('ellipse')
+            .attr('cx', xPos)
+            .attr('cy', yPos)
+            .attr('rx', xAxis)
+            .attr('ry', yAxis)
+            .style('fill', 'green');
+        };
         console.log("drawing Mole");
-        const mole = d3.select(svg.value); // How to reference a prop in script vue
         // mole.selectAll('*').remove() // Clear previous renders
         
-        mole.attr('width', width).attr('height', height)
-
-        console.log(`Selected Mole: ${mole}`);
-        mole.append('ellipse')
-        .attr('cx', xPos)
-        .attr('cy', yPos)
-        .attr('rx', xAxis)
-        .attr('ry', yAxis)
-        .style('fill', 'green');
 
     };
     onMounted(drawMole);
-    watch(() => xAxis, drawMole);
+    watch(() => data, drawMole);
 
 </script>
 
