@@ -1,8 +1,7 @@
 <template>
   <UButton @click="refresh()">Refresh</UButton>
   {{ maxDepth }}
-  {{ currentMaxDepth }}
-  <USlider :min="0" :max="maxDepth + 1" v-model="currentMaxDepth" />
+  <USlider :min="0" :max="100" v-model="drainPercent" />
 </template>
 
 <script setup lang="ts">
@@ -28,7 +27,7 @@ const { data: activeBodyData, refresh } = useAsyncData(
   }
 );
 
-const currentMaxDepth = ref(0);
+const drainPercent = ref(0);
 
 const maxDepth = computed(() => {
   if (!activeBodyData.value) return 0;
@@ -42,7 +41,7 @@ const maxDepth = computed(() => {
 watch(maxDepth, (newData) => {
   if (!newData) return;
 
-  currentMaxDepth.value = 0;
+  drainPercent.value = 0;
 });
 
 let shapeLayer: L.LayerGroup;
@@ -88,11 +87,41 @@ const bathMap = computed<BathymetryPointMap>(() => {
   return map;
 });
 
+const volumePercentRemainingAtDepth = computed(() => {
+  if (!bathMap.value.size) return [];
+  if (!activeBodyData.value?.depthBathymetry) return [];
+
+  const allDepths = Array.from(bathMap.value.keys()).sort((a, b) => a - b);
+  allDepths.push(maxDepth.value + 1);
+  const allPoints = activeBodyData.value.depthBathymetry.length;
+
+  const percentagesWithNext = allDepths.map((depth, index) => {
+    const pointsDeeperThanDepth = allDepths
+      .slice(index)
+      .reduce((sum, d) => sum + (bathMap.value.get(d)?.length ?? 0), 0);
+
+    return {
+      depth,
+      percentageRemaining: pointsDeeperThanDepth / allPoints
+    };
+  });
+
+  return percentagesWithNext;
+});
+
+const thresholdDepth = computed(() => {
+  return (
+    volumePercentRemainingAtDepth.value.find(
+      (entry) => entry.percentageRemaining <= (100 - drainPercent.value) / 100
+    )?.depth ?? 0
+  );
+});
+
 const filteredBathymetryData = computed(() => {
   const result: BathymetryMapBlip[] = [];
 
   bathMap.value.forEach((points, depth) => {
-    if (depth + 1 > currentMaxDepth.value) {
+    if (depth + 1 > thresholdDepth.value) {
       result.push(...points);
     }
   });
@@ -109,7 +138,7 @@ watch(filteredBathymetryData, () => {
 function updateBathymetryLayer() {
   // Step 1: Remove points that are no longer in the filtered data
   currentlyRenderedPoints.forEach((blip) => {
-    if (blip.data.z <= currentMaxDepth.value + 1) {
+    if (blip.data.z <= thresholdDepth.value + 1) {
       depthLayer.removeLayer(blip.point);
       currentlyRenderedPoints.delete(blip);
     }

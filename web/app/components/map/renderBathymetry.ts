@@ -23,6 +23,7 @@ export function makeBathymetryPoint(
 ): L.Circle {
   return L.circle([data.latitude, data.longitude], {
     color: getColorForDepth(data.z, maxDepth),
-    radius: 2
-  }).bindPopup(`Depth: ${data.z.toFixed(2)} m`);
+    radius: 250,
+    fillOpacity: 1
+  });
 }
