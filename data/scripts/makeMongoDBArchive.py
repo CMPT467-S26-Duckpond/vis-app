@@ -14,13 +14,19 @@ from pymongo import MongoClient
 import os
 import json
 import subprocess
-from area import area as calculate_area
+import requests
+from time import sleep
 
 MONGO_URL = "mongodb://localhost:3001/"
-DATABASE_NAME="467projdata"
-COLLECTION_NAME="map_water_bodies"
+DATABASE_NAME = "467projdata"
+COLLECTION_NAME = "map_water_bodies"
 
 WATER_BODIES_PATH = "../lakes/split"
+
+
+def mean(values):
+    return sum(values) / len(values)
+
 
 if __name__ == "__main__":
     client = MongoClient(MONGO_URL)
@@ -28,26 +34,96 @@ if __name__ == "__main__":
     db = client[DATABASE_NAME]
 
     # Read all GeoJSON files in the split dir and insert them into the database
+
+    batch = []
     for filename in os.listdir(WATER_BODIES_PATH):
+        if len(batch) >= 50:
+            # Process batch and upload to MongoDB
+            # Need to fetch a couple things from wikidata
+
+            wikidata_ids = "|".join([item["wikidataId"] for item in batch])
+
+            batchUrl = f"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={wikidata_ids}&format=json&languages=en&props=claims"
+
+            res = requests.get(
+                batchUrl,
+                json=True,
+                headers={"User-Agent": "academic project (python script)"},
+            )
+            data = res.json()  # type: dict
+
+            for item in batch:
+                wikiDataId = item["wikidataId"]
+
+                wikidataRes = data["entities"][wikiDataId]
+                if wikidataRes is None:
+                    continue
+
+                # Need to get 3 properties from wikidata - surface elevation and volume, area
+                # If they are missing, skip this item
+                surfaceElevation = wikidataRes["claims"].get("P2044", None)
+                volume = wikidataRes["claims"].get("P2234", None)
+                area = wikidataRes["claims"].get("P2046", None)
+
+                if surfaceElevation is None or volume is None or area is None:
+                    continue
+
+                surfaceElevation = mean(
+                    [
+                        float(claim["mainsnak"]["datavalue"]["value"]["amount"])
+                        for claim in surfaceElevation
+                    ]
+                )
+                volume = mean(
+                    [
+                        float(claim["mainsnak"]["datavalue"]["value"]["amount"])
+                        for claim in volume
+                    ]
+                )
+                area = mean(
+                    [
+                        float(claim["mainsnak"]["datavalue"]["value"]["amount"])
+                        for claim in area
+                    ]
+                )
+
+                toUpload = {
+                    "name": item["name"],
+                    "position": item["position"],
+                    "geoJSON": item["geoJSON"],
+                    "wikidataId": item["wikidataId"],
+                    "surfaceAreaKM2": area,
+                    "surfaceElevationM": surfaceElevation,
+                    "volumeKM3": volume,
+                }
+
+                db[COLLECTION_NAME].insert_one(toUpload)
+            batch = []
+            sleep(1)
+
         if filename.endswith(".geojson"):
             with open(os.path.join(WATER_BODIES_PATH, filename), encoding="utf-8") as f:
                 data = json.load(f)
-
-                area = calculate_area(data["features"][0]["geometry"])
 
                 allCoordinates = data["features"][0]["geometry"]["coordinates"][0][0]
                 meanCoords = [
                     sum(x) / len(allCoordinates) for x in zip(*allCoordinates)
                 ]
 
-                toUpload = {
-                    "name": data["features"][0]["properties"]["name"],
-                    "position": meanCoords,
-                    "surfaceArea": area,
-                    "geoJSON": data,
-                }
+                wikiDataId = data["features"][0]["properties"]["wikidataid"]
 
-                db[COLLECTION_NAME].insert_one(toUpload)
+                # Ensure we have a wikidata entry
+                if wikiDataId is None:
+                    continue
+
+                batch.append(
+                    {
+                        "name": data["features"][0]["properties"]["name"],
+                        "position": meanCoords,
+                        "geoJSON": data,
+                        "wikidataId": wikiDataId,
+                    }
+                )
 
     # Export database
     subprocess.run(
