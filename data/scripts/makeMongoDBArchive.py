@@ -16,6 +16,7 @@ import json
 import subprocess
 import requests
 from time import sleep
+import math
 
 MONGO_URL = "mongodb://localhost:3001/"
 DATABASE_NAME = "467projdata"
@@ -93,7 +94,7 @@ if __name__ == "__main__":
                     "geoJSON": item["geoJSON"],
                     "wikidataId": item["wikidataId"],
                     "surfaceAreaKM2": area,
-                    "surfaceElevationM": surfaceElevation,
+                    "surfaceElevationM": math.ceil(surfaceElevation),
                     "volumeKM3": volume,
                 }
 
