@@ -1,23 +1,21 @@
 <template>
-  <UButton @click="updateMap">Refresh</UButton>
+  <UButton @click="refresh()">Refresh</UButton>
   {{ maxDepth }}
   {{ currentMaxDepth }}
-  <USlider :min="0" :max="maxDepth" v-model="currentMaxDepth" />
+  <USlider :min="0" :max="maxDepth + 1" v-model="currentMaxDepth" />
 </template>
 
 <script setup lang="ts">
-import type { BathymetryResponse } from "~~/server/api/supplementary/waterBodies/[id]/bathymetry.get";
-
+import type { BathymetryPoint } from "~~/server/models/MapWaterBody";
 import * as L from "leaflet";
-
-import { renderBathymetryData } from "./renderBathymetry";
+import { makeBathymetryPoint } from "./renderBathymetry";
 
 const { map, selectedBody } = defineProps<{
   map: L.Map | L.LayerGroup;
   selectedBody: string;
 }>();
 
-const { data: activeBodyData } = useAsyncData(
+const { data: activeBodyData, refresh } = useAsyncData(
   "activeBodyData",
   () => {
     if (!selectedBody) throw new Error("No body selected");
@@ -32,24 +30,27 @@ const { data: activeBodyData } = useAsyncData(
 
 const currentMaxDepth = ref(0);
 
-watch(
-  () => activeBodyData.value,
-  (newData) => {
-    if (!newData) return;
+const maxDepth = computed(() => {
+  if (!activeBodyData.value) return 0;
 
-    const bathymetryData = newData.bathymetryData;
-    if (!bathymetryData) return;
+  const bathymetryData = activeBodyData.value.depthBathymetry;
+  if (!bathymetryData) return 0;
 
-    currentMaxDepth.value = -Math.min(...bathymetryData.z);
-  }
-);
+  return Math.max(...bathymetryData.map((d) => d.z));
+});
+
+watch(maxDepth, (newData) => {
+  if (!newData) return;
+
+  currentMaxDepth.value = 0;
+});
 
 let shapeLayer: L.LayerGroup;
 let depthLayer: L.LayerGroup;
 
 onMounted(() => {
-  shapeLayer = new L.LayerGroup().addTo(map);
   depthLayer = new L.LayerGroup().addTo(map);
+  shapeLayer = new L.LayerGroup().addTo(map);
 });
 
 onUnmounted(() => {
@@ -57,66 +58,94 @@ onUnmounted(() => {
   depthLayer.remove();
 });
 
-const maxDepth = ref(0);
+type BathymetryMapBlip = { data: BathymetryPoint; point: L.Circle };
+
+export type BathymetryPointMap = Map<number, BathymetryMapBlip[]>;
+
+/**
+ * Group bathymetry points by depth for more performant rendering and filtering
+ */
+const bathMap = computed<BathymetryPointMap>(() => {
+  if (!activeBodyData.value) return new Map();
+
+  const bathymetryData = activeBodyData.value.depthBathymetry;
+  if (!bathymetryData) return new Map();
+
+  const map: BathymetryPointMap = new Map();
+
+  bathymetryData.forEach((point) => {
+    const depth = point.z;
+    if (!map.has(depth)) {
+      map.set(depth, []);
+    }
+
+    map.get(depth)!.push({
+      data: point,
+      point: makeBathymetryPoint(point, maxDepth.value)
+    });
+  });
+
+  return map;
+});
 
 const filteredBathymetryData = computed(() => {
-  if (!activeBodyData.value) return null;
+  const result: BathymetryMapBlip[] = [];
 
-  const bathymetryData = activeBodyData.value.bathymetryData;
-  if (!bathymetryData) return null;
-
-  const filtered: BathymetryResponse = {
-    latitude: [],
-    longitude: [],
-    z: []
-  };
-
-  for (let i = 0; i < bathymetryData.z.length; i++) {
-    if (-bathymetryData.z[i]! > currentMaxDepth.value) {
-      filtered.latitude.push(bathymetryData.latitude[i]!);
-      filtered.longitude.push(bathymetryData.longitude[i]!);
-      filtered.z.push(bathymetryData.z[i]!);
+  bathMap.value.forEach((points, depth) => {
+    if (depth + 1 > currentMaxDepth.value) {
+      result.push(...points);
     }
-  }
+  });
 
-  return filtered;
+  return result;
 });
+
+const currentlyRenderedPoints = new Set<BathymetryMapBlip>();
 
 watch(filteredBathymetryData, () => {
   updateBathymetryLayer();
 });
 
-async function updateBathymetryLayer() {
-  if (!filteredBathymetryData.value) return;
+function updateBathymetryLayer() {
+  // Step 1: Remove points that are no longer in the filtered data
+  currentlyRenderedPoints.forEach((blip) => {
+    if (blip.data.z <= currentMaxDepth.value + 1) {
+      depthLayer.removeLayer(blip.point);
+      currentlyRenderedPoints.delete(blip);
+    }
+  });
 
-  depthLayer.clearLayers();
-  renderBathymetryData(
-    filteredBathymetryData.value,
-    depthLayer,
-    -maxDepth.value
-  );
+  // Step 2: Add new points that are in the filtered data but not currently rendered
+  filteredBathymetryData.value.forEach((blip) => {
+    if (!currentlyRenderedPoints.has(blip)) {
+      blip.point.addTo(depthLayer);
+      currentlyRenderedPoints.add(blip);
+    }
+  });
 }
 
-async function updateMap() {
+function updateMap() {
   if (!activeBodyData.value) return;
 
   shapeLayer.clearLayers();
+  depthLayer.clearLayers();
+  currentlyRenderedPoints.clear();
 
-  L.geoJSON(activeBodyData.value.bodyData.geoJSON, {
+  L.geoJSON(activeBodyData.value.geoJSON, {
     style: {
       color: "blue",
       fillColor: "blue",
       fillOpacity: 0.5
     }
-  }).addTo(shapeLayer);
-
-  maxDepth.value = -Math.min(...activeBodyData.value.bathymetryData!.z);
+  })
+    .setZIndex(-1)
+    .addTo(shapeLayer);
 
   // Chonky boi
   updateBathymetryLayer();
 }
 
-watch(activeBodyData, async (newValue) => {
+watch(activeBodyData, (newValue) => {
   if (!newValue) return;
 
   updateMap();

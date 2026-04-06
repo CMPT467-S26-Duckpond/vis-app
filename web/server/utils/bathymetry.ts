@@ -1,29 +1,14 @@
 import { geoContains, GeoGeometryObjects } from "d3-geo";
 import { HydratedDocument } from "mongoose";
-import MapWaterBody from "~~/server/models/MapWaterBody";
-
-import { getWaterBodyRouteSchema } from "./index.get";
-
-/**
- * Index-aligned keys
- * i.e. longitude[0], latitude[0], and z[0] together represent the same point
- */
-export type BathymetryResponse = {
-  longitude: number[];
-  latitude: number[];
-  /**
-   * Height of the point relative to sea level in meters. 0 Represents sea level, positive values represent above sea level, and negative values represent below sea level.
-   */
-  z: number[];
-};
+import MapWaterBody, { BathymetryPoint } from "../models/MapWaterBody";
 
 export type MapWaterBodyType = HydratedDocument<
   InstanceType<typeof MapWaterBody>
 >;
 
-export function getBathymetryData(
+export async function getBathymetryData(
   waterBody: MapWaterBodyType
-): Promise<BathymetryResponse> {
+): Promise<BathymetryPoint[]> {
   if (waterBody.geoJSON.type !== "FeatureCollection") {
     throw createError({
       statusCode: 500,
@@ -49,39 +34,23 @@ export function getBathymetryData(
 
   const polygonBoundingBoxes = polygons.map(getPolygonBoundingGeoJson);
 
-  const bathymetryResponse = fetchBathymetryData(
+  const bathymetryResponse = await fetchBathymetryData(
     waterBody as MapWaterBodyType,
     polygons,
     polygonBoundingBoxes
   );
 
-  return bathymetryResponse;
+  // Convert from index-aligned arrays to array of points
+  const points = bathymetryResponse.longitude.map<BathymetryPoint>(
+    (lng, index) => ({
+      longitude: lng!,
+      latitude: bathymetryResponse.latitude[index]!,
+      z: bathymetryResponse.z[index]!
+    })
+  );
+
+  return points;
 }
-
-export default defineCachedEventHandler(
-  async (event) => {
-    const body = await getValidatedRouterParams(
-      event,
-      getWaterBodyRouteSchema.parse
-    );
-
-    const waterBody = await MapWaterBody.findById(body.id);
-
-    if (!waterBody) {
-      throw createError({
-        statusCode: 404,
-        message: "Water body not found"
-      });
-    }
-
-    return getBathymetryData(waterBody as MapWaterBodyType);
-  },
-  {
-    maxAge: 60 * 60 * 24 // Cache for 24 hours since the bathymetry data is unlikely to change
-  }
-);
-
-// ------------------------------------- Helper functions -------------------------------------
 
 type LatLngBounds = [
   minLat: number,
@@ -167,16 +136,24 @@ function filterAndMergeBathymetryData(
 
   const shoreline = waterBody.surfaceElevationM;
   // Adjust all points z-value to be relative to the shoreline, clamped at 0 (none of the points should be above sea level)
-  mergedData.z = mergedData.z.map((z) => Math.min(z - shoreline, 0));
-
-  const volume =
-    mergedData.z.reduce((acc, z) => acc + Math.abs(z) * 500 * 500, 0) * 10; // Each point represents a 500m x 500m area, so we can multiply the depth by that to get a volume, then sum it all up
-
-  console.log("Shoreline height (meters):", shoreline);
-  console.log("Estimated volume (cubic meters):", volume);
+  // Also convert depth to positive (instead of the previous representation of height "above" sea level, it's now depth below surface, so it's more intuitive to work with in the frontend)
+  mergedData.z = mergedData.z.map((z) => Math.max(shoreline - z, 0));
 
   return mergedData;
 }
+
+/**
+ * Index-aligned keys
+ * i.e. longitude[0], latitude[0], and z[0] together represent the same point
+ */
+type BathymetryResponse = {
+  longitude: number[];
+  latitude: number[];
+  /**
+   * Height of the point relative to sea level in meters. 0 Represents sea level, positive values represent above sea level, and negative values represent below sea level.
+   */
+  z: number[];
+};
 
 async function fetchBathymetryData(
   waterBody: MapWaterBodyType,
@@ -186,7 +163,10 @@ async function fetchBathymetryData(
   // https://github.com/cywhale/gebco
   const polygonRes = polygonBoundingBoxes.map((polygon) =>
     $fetch<BathymetryResponse>(
-      `https://api.odb.ntu.edu.tw/gebco?mode=zonly&jsonsrc=${JSON.stringify(polygon)}`
+      `https://api.odb.ntu.edu.tw/gebco?mode=zonly&jsonsrc=${JSON.stringify(polygon)}`,
+      {
+        timeout: 15000 // 15 seconds
+      }
     )
   );
 

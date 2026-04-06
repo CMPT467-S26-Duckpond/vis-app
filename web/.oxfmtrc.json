@@ -11,7 +11,8 @@
       ["type-parent", "type-sibling", "type-index"],
       ["value-parent", "value-sibling", "value-index"],
       "unknown"
-    ]
+    ],
+    "newlinesBetween": false
   },
   "ignorePatterns": [".output/**"]
 }

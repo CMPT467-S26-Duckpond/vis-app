@@ -4,7 +4,8 @@ export default defineEventHandler(async () => {
   // Returns a list of all lakes with their names and coordinates.
   const res = await MapWaterBody.find(undefined, {
     _id: 1,
-    geoJSON: 0
+    geoJSON: 0,
+    bathymetryData: 0
   }).lean();
 
   if (!res) {
