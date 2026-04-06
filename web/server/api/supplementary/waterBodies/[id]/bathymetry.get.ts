@@ -1,14 +1,8 @@
 import { geoContains, GeoGeometryObjects } from "d3-geo";
-import { mean, median } from "es-toolkit";
-import { max } from "es-toolkit/compat";
 import { HydratedDocument } from "mongoose";
-import { z } from "zod/v4";
 import MapWaterBody from "~~/server/models/MapWaterBody";
-import { zodMongooseObjectId } from "~~/shared/utils/zod";
 
-const getBathymetrySchema = z.object({
-  bodyId: zodMongooseObjectId
-});
+import { getWaterBodyRouteSchema } from "./index.get";
 
 /**
  * Index-aligned keys
@@ -23,25 +17,29 @@ export type BathymetryResponse = {
   z: number[];
 };
 
-type MapWaterBodyType = HydratedDocument<InstanceType<typeof MapWaterBody>>;
+export type MapWaterBodyType = HydratedDocument<
+  InstanceType<typeof MapWaterBody>
+>;
 
-export default defineEventHandler(async (event) => {
-  const body = await readValidatedBody(event, getBathymetrySchema.parse);
-
-  const waterBody = await MapWaterBody.findById(body.bodyId);
-
-  if (!waterBody) {
+export function getBathymetryData(
+  waterBody: MapWaterBodyType
+): Promise<BathymetryResponse> {
+  if (waterBody.geoJSON.type !== "FeatureCollection") {
     throw createError({
-      statusCode: 404,
-      message: "Water body not found"
+      statusCode: 500,
+      message:
+        "Invalid GeoJSON format for water body - expected FeatureCollection"
     });
   }
 
-  if (waterBody.geoJSON.type !== "FeatureCollection") return;
-
   const coords = (waterBody.geoJSON as GeoJSON.FeatureCollection).features[0];
 
-  if (!coords || coords.geometry.type !== "MultiPolygon") return;
+  if (!coords || coords.geometry.type !== "MultiPolygon") {
+    throw createError({
+      statusCode: 500,
+      message: "Invalid GeoJSON format for water body - expected MultiPolygon"
+    });
+  }
 
   const polygons = splitMultiPolygon(coords.geometry as GeoJSON.MultiPolygon);
 
@@ -58,7 +56,30 @@ export default defineEventHandler(async (event) => {
   );
 
   return bathymetryResponse;
-});
+}
+
+export default defineCachedEventHandler(
+  async (event) => {
+    const body = await getValidatedRouterParams(
+      event,
+      getWaterBodyRouteSchema.parse
+    );
+
+    const waterBody = await MapWaterBody.findById(body.id);
+
+    if (!waterBody) {
+      throw createError({
+        statusCode: 404,
+        message: "Water body not found"
+      });
+    }
+
+    return getBathymetryData(waterBody as MapWaterBodyType);
+  },
+  {
+    maxAge: 60 * 60 * 24 // Cache for 24 hours since the bathymetry data is unlikely to change
+  }
+);
 
 // ------------------------------------- Helper functions -------------------------------------
 

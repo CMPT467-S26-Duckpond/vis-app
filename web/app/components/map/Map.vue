@@ -6,24 +6,24 @@
   -->
   <div ref="map" style="height: 500px" />
 
-  {{ activeBodyDataStatus }}
-
-  <UButton @click="updateMap">Refresh</UButton>
+  <ActiveBody
+    v-if="selectedBody && map"
+    :selected-body="selectedBody"
+    :map="map"
+  />
 </template>
 
 <script setup lang="ts">
 import * as L from "leaflet";
 import { ref, onMounted, useTemplateRef } from "vue";
 
+import ActiveBody from "./ActiveBody.vue";
 import { setMapPins } from "./mapPins";
-import { mapVolumeTest } from "./mapVolume";
 
 const mapRef = useTemplateRef("map");
 const map = ref<L.Map>();
 
 const selectedBody = ref<string>();
-let shapeLayer: L.LayerGroup;
-let depthLayer: L.LayerGroup;
 
 function loadMap() {
   if (!map.value) return;
@@ -47,48 +47,11 @@ onMounted(() => {
   map.value = L.map(mapRef.value);
 
   const pinLayer = new L.LayerGroup().addTo(map.value);
-  shapeLayer = new L.LayerGroup().addTo(map.value);
-  depthLayer = new L.LayerGroup().addTo(map.value);
 
   loadMap();
 
   setMapPins(pinLayer, map.value, async (event, id) => {
     selectedBody.value = id;
   });
-});
-
-const { data: activeBodyData, status: activeBodyDataStatus } = useAsyncData(
-  "activeBodyData",
-  () => {
-    if (!selectedBody.value) throw new Error("No body selected");
-    return $fetch(`/api/supplementary/waterBodies/${selectedBody.value}`);
-  },
-  {
-    watch: [selectedBody]
-  }
-);
-
-function updateMap() {
-  if (!activeBodyData.value) return;
-
-  shapeLayer.clearLayers();
-  depthLayer.clearLayers();
-
-  L.geoJSON(activeBodyData.value.geoJSON, {
-    style: {
-      color: "blue",
-      fillColor: "blue",
-      fillOpacity: 0.5
-    }
-  }).addTo(shapeLayer);
-
-  // Chonky boi
-  mapVolumeTest(activeBodyData.value._id, depthLayer);
-}
-
-watch(activeBodyData, async (newValue) => {
-  if (!newValue) return;
-
-  updateMap();
 });
 </script>

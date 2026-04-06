@@ -21,6 +21,6 @@ export async function setMapPins(
         .addTo(layer);
     });
   } catch (error) {
-    console.error("Fuck:", error);
+    console.error(error);
   }
 }

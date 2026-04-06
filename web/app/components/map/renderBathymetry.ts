@@ -1,3 +1,5 @@
+import type { BathymetryResponse } from "~~/server/api/supplementary/waterBodies/[id]/bathymetry.get";
+
 import * as L from "leaflet";
 
 type RGB = [r: number, g: number, b: number];
@@ -15,30 +17,23 @@ function getColorForDepth(depth: number, maxDepth: number): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-export async function mapVolumeTest(id: string, layer: L.LayerGroup) {
-  const depth = await $fetch("/api/supplementary/bathymetry", {
-    method: "POST",
-    body: {
-      bodyId: id
-    }
-  });
+export function renderBathymetryData(
+  data: BathymetryResponse,
+  layer: L.LayerGroup,
+  pinMinDepth?: number
+) {
+  const minDepth = pinMinDepth ?? Math.min(...data.z);
 
-  if (!depth) return;
-
-  const minDepth = Math.min(...depth.z);
-
-  for (let i = 0; i < depth.longitude.length; i++) {
+  for (let i = 0; i < data.longitude.length; i++) {
     const point = {
-      longitude: depth.longitude[i]!,
-      latitude: depth.latitude[i]!,
-      z: depth.z[i]!
+      longitude: data.longitude[i]!,
+      latitude: data.latitude[i]!,
+      z: data.z[i]!
     };
 
     L.circle([point.latitude, point.longitude], {
       color: getColorForDepth(point.z, minDepth),
       radius: 2
-    })
-      .bindPopup(`<strong>${point.z}</strong>`)
-      .addTo(layer);
+    }).addTo(layer);
   }
 }
