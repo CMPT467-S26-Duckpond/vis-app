@@ -7,5 +7,5 @@ export function addEllipseTest(svgFrame : any){
     .attr('cy', 10)
     .attr('rx', 10)
     .attr('ry', 10)
-    .style('fill', 'green');
+    .style('fill', 'blue');
 }

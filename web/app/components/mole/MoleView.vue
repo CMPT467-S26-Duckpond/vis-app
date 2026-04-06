@@ -20,7 +20,7 @@
     // Adapted From :https://observablehq.com/@d3/disjoint-force-directed-graph/2
 
     // Level drop down
-    const svg = ref(null);
+    const svg = ref<SVGSVGElement>(null);
 
     import Mole from "~/components/mole/Mole.vue";
     import {filterDataByAbstraction, fetchData, printData} from "~/components/mole/dataUtils";
@@ -56,19 +56,17 @@
     let widthSubset = ref<Object>(Object);
     let heightSubset = ref(null);
     
-    
+    // Zoom D3 Example: https://observablehq.com/@d3/programmatic-zoom?collection=@d3/d3-zoom
     const fetchElipseData = async () => {
-        const moleFrame = d3.select(svg.value);
+        const moleFrame = d3.select<SVGSVGElement, unknown>(svg.value);
         const width = 928;
         const height = 300;
-        moleFrame.attr('width', width).attr('height', height);
+        moleFrame.attr("viewBox", [0, 0, width, height]);
+        const g = moleFrame.append("g").attr("cursor", "grab");
+
+        g.selectAll('*').remove();
+        //moleFrame.attr('width', width).attr('height', height);
         
-        moleFrame.append('ellipse')
-        .attr('cx', 10)
-        .attr('cy', 10)
-        .attr('rx', 10)
-        .attr('ry', 10)
-        .style('fill', 'green');
         // Fetch the Height data of the elipse  
         const widthData :Promise<Object> = await fetchData(
             props.targetVariable, 
@@ -84,28 +82,55 @@
         heightSubset = filterDataByAbstraction(heightData, abstraction);
 
         let xPositon = 0;
+        const padding = 5;
+        
         widthSubset2.forEach((data: any, index) => {
 
             console.log(`Item = ${data}, index = ${index}`);
             if(data.value > 0){
-                xPositon = 10;
                 printData(data, "Elipse data");
-
-                moleFrame.append('ellipse')
+                
+                xPositon = xPositon + (data.value *.03) + padding ; // Put centre at 1/2 the distance of the elipse width
+                g.append('ellipse')
                 .attr('cx', xPositon)
                 .attr('cy', 10)
-                .attr('rx', Math.round(data.value))
-                .attr('ry', Math.round(data.value))
+                .attr('rx', Math.round(data.value *.03))
+                .attr('ry', Math.round(data.value *.03))
                 .style('fill', 'green');
+                xPositon = xPositon + (data.value *.03 + padding); // Put centre at 1/2 the distance of the elipse width
             }
 
+
         });
-        
-        addEllipseTest(moleFrame);
+
+        moleFrame.call(d3.zoom<SVGSVGElement, unknown>()
+        .extent([[0, 0], [width*100, height*100]])
+        .scaleExtent([1, 100])
+        .on("zoom", ({transform}) => {
+            //What to do when zooming on the ellipses
+            console.log(`ZOOOMING`);
+            g.attr("transform", transform);
+        }));
+
         
         
     };
 
+    function dragstarted(){
+        console.log(`Starting Drag`);
+        // d3.select(this).raise();
+        // g.attr("cursor", "grabbing");
+    }
+
+     function dragged(event, d) {
+        console.log(`Dragging`);
+        //d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y);
+    }
+
+    function dragended(){
+
+
+    }
 
     //TODO: Dynamically create a mole view based on the number of countries/area is in the selected level hierarchy.
     console.log(`aqua stat data width = ${widthSubset.value}`);
@@ -125,6 +150,8 @@
     function drawMole(){
         console.log("Drawing Mole");
     }
+
+
 
     
 </script>
