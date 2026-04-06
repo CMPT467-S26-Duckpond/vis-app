@@ -8,7 +8,9 @@ interface IMapFeature {
    */
   position: [lng: number, lat: number];
   geoJSON: GeoJsonObject;
-  surfaceArea: number;
+  surfaceAreaKM2: number;
+  surfaceElevationM: number;
+  volumeKM3: number;
 }
 
 export const MapWaterBody = new Schema<IMapFeature>({
@@ -17,14 +19,22 @@ export const MapWaterBody = new Schema<IMapFeature>({
     required: true
   },
   position: {
-    type: Array,
+    type: [Number],
     required: true
   },
   geoJSON: {
     type: Object,
     required: true
   },
-  surfaceArea: {
+  surfaceAreaKM2: {
+    type: Number,
+    required: true
+  },
+  surfaceElevationM: {
+    type: Number,
+    required: true
+  },
+  volumeKM3: {
     type: Number,
     required: true
   }

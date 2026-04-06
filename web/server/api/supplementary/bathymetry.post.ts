@@ -1,5 +1,7 @@
 import { geoContains, GeoGeometryObjects } from "d3-geo";
 import { mean, median } from "es-toolkit";
+import { max } from "es-toolkit/compat";
+import { HydratedDocument } from "mongoose";
 import { z } from "zod/v4";
 import MapWaterBody from "~~/server/models/MapWaterBody";
 import { zodMongooseObjectId } from "~~/shared/utils/zod";
@@ -20,6 +22,8 @@ export type BathymetryResponse = {
    */
   z: number[];
 };
+
+type MapWaterBodyType = HydratedDocument<InstanceType<typeof MapWaterBody>>;
 
 export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, getBathymetrySchema.parse);
@@ -48,6 +52,7 @@ export default defineEventHandler(async (event) => {
   const polygonBoundingBoxes = polygons.map(getPolygonBoundingGeoJson);
 
   const bathymetryResponse = fetchBathymetryData(
+    waterBody as MapWaterBodyType,
     polygons,
     polygonBoundingBoxes
   );
@@ -100,6 +105,7 @@ function splitMultiPolygon(
 }
 
 function filterAndMergeBathymetryData(
+  waterBody: MapWaterBodyType,
   polygonData: BathymetryResponse[],
   polygons: GeoJSON.Polygon[]
 ): BathymetryResponse {
@@ -138,24 +144,21 @@ function filterAndMergeBathymetryData(
     mergedData.z.push(...data.z);
   }
 
-  // Determine the height of the shoreline by taking the average height of all points on the edge of the lake
-  // Some of the returned points aren't actually over water, so we can't just take a max height because it could be hundreds of meters wrong
-
-  // To determine which points are on the edge, we map the coordinates into an 2D array, then find all points that do not have 4 (8?) neighbours.
-  const shoreline = getShorelineHeight(mergedData);
-
+  const shoreline = waterBody.surfaceElevationM;
   // Adjust all points z-value to be relative to the shoreline, clamped at 0 (none of the points should be above sea level)
   mergedData.z = mergedData.z.map((z) => Math.min(z - shoreline, 0));
 
   const volume =
     mergedData.z.reduce((acc, z) => acc + Math.abs(z) * 500 * 500, 0) * 10; // Each point represents a 500m x 500m area, so we can multiply the depth by that to get a volume, then sum it all up
 
+  console.log("Shoreline height (meters):", shoreline);
   console.log("Estimated volume (cubic meters):", volume);
 
   return mergedData;
 }
 
 async function fetchBathymetryData(
+  waterBody: MapWaterBodyType,
   polygons: GeoJSON.Polygon[],
   polygonBoundingBoxes: GeoJSON.Polygon[]
 ): Promise<BathymetryResponse> {
@@ -170,7 +173,7 @@ async function fetchBathymetryData(
     const polygonData = await Promise.all(polygonRes);
 
     // Filter the response to only include points that are contained within their original polygons
-    return filterAndMergeBathymetryData(polygonData, polygons);
+    return filterAndMergeBathymetryData(waterBody, polygonData, polygons);
   } catch (error) {
     console.log(error);
     throw createError({
@@ -179,67 +182,4 @@ async function fetchBathymetryData(
       data: error
     });
   }
-}
-
-function getShorelineHeight(bathymetry: BathymetryResponse): number {
-  // 1) Map to 2D grid
-  const obj = bathymetry.latitude.map((lat, index) => {
-    return {
-      lat,
-      lng: bathymetry.longitude[index]!,
-      z: bathymetry.z[index]!
-    };
-  });
-
-  const uniqueLng = [...new Set(bathymetry.longitude)].sort((a, b) => a - b);
-
-  const sorted = obj.toSorted((a, b) => b.lat - a.lat || a.lng - b.lng);
-
-  const grid: number[][] = [];
-  let nextRow: number[] = Array(uniqueLng.length).fill(NaN);
-
-  let lastLngIndex = -1;
-  for (const point of sorted) {
-    const longIndex = uniqueLng.findIndex((lng) => lng === point.lng);
-
-    if (longIndex <= lastLngIndex) {
-      grid.push(nextRow);
-      nextRow = Array(uniqueLng.length).fill(NaN);
-      lastLngIndex = -1;
-    }
-
-    nextRow[longIndex] = point.z;
-    lastLngIndex = longIndex;
-  }
-  grid.push(nextRow);
-
-  // 2) Find all edge points, i.e. points that have at least one NaN neighbour
-
-  // Start by just finding coordinates without values
-  // This simplifies the logic a log, since we don't have to worry about edge cases of out-of-bounds array indices within the loop.
-  // Once we have the coordinate list, we can just filter out OOB coords and then map to values
-  const edgePoints: Set<string> = new Set();
-  grid.forEach((row, rowId) => {
-    row.forEach((z, colId) => {
-      if (isNaN(z)) {
-        edgePoints.add(`${rowId - 1},${colId}`); // Up
-        edgePoints.add(`${rowId + 1},${colId}`); // Down
-        edgePoints.add(`${rowId},${colId - 1}`); // Left
-        edgePoints.add(`${rowId},${colId + 1}`); // Right
-
-        // TODO diag?
-      }
-    });
-  });
-
-  // 3) Take the mean of all edge points as the shoreline height, filtering out OOB edge points from above
-  const edgeValues = [...edgePoints]
-    .map((coord) => coord.split(",").map(Number) as [row: number, col: number])
-    .filter(([row, col]) => {
-      return row >= 0 && row < grid.length && col >= 0 && col < grid[0]!.length;
-    })
-    .map(([row, col]) => grid[row]![col]!)
-    .filter((z) => !isNaN(z));
-
-  return median(edgeValues);
 }
