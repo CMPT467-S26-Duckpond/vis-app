@@ -64,13 +64,13 @@
     const fetchElipseData = async () => {
         year.value = props.targetYear;
         const moleFrame = d3.select<SVGSVGElement, unknown>(svg.value);
+        moleFrame.selectAll('*').remove();
         const width = 928;
         const height = 300;
         moleFrame.attr("viewBox", [0, 0, width, height]);
         const g = moleFrame.append("g").attr("cursor", "grab");
 
         // Remove all previously drawn data ellipses
-        g.selectAll('*').remove();
         //moleFrame.attr('width', width).attr('height', height);
         
         // Fetch the Height data of the elipse  
