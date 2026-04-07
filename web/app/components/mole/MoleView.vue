@@ -97,19 +97,27 @@
             if(data.value > 0){
                 printData(data, "Elipse data");
                 const moleColour = getMoleColour(data.value, thresholds);
-                var tooltip = g.append("div").style("position", "absolute").style("visibility", "hidden").text(data.name);
                 xPositon = xPositon + (data.value *.03) + padding ; // Put centre at 1/2 the distance of the elipse width
+                //var tooltip = g.append("text").style("position", "absolute").style("visibility", "hidden").text(data.name);
                 const newEllipse = g.append('ellipse')
                 .attr("id", createID(`${data.name}`))
                 .attr('cx', xPositon)
                 .attr('cy', 10)
                 .attr('rx', Math.round(data.value *.03))
                 .attr('ry', Math.round(data.value *.03))
-                .style('fill', moleColour)
-                .on("mouseover", () => {
+                .style('fill', moleColour);
+
+                var tooltip = g.append("text").text(data.name).style("position", "absolute").style("visibility", "hidden").style("color","black")
+                .attr("x",xPositon).attr("y", 10).attr("class","tool-tip")
+                .attr("background-color","white");
+
+
+                newEllipse.on("mouseover", () => {
                     tooltip.style("visibility", "visible")
-                    console.log(`Moused over ${data.name}`);
+                    tooltip.raise()
+                    console.log(`Moused over ${tooltip.text()}`);
                 })
+                //.on("mousemove", () => tooltip.style("top", (10)+"px").style("left",(xPositon)+"px"))
                 .on("mouseout", () => tooltip.style("visibility", "hidden"));
                 xPositon = xPositon + (data.value *.03 + padding); // Put centre at 1/2 the distance of the elipse width
                 
@@ -124,8 +132,10 @@
         .scaleExtent([1, 100])
         .on("zoom", ({transform}) => {
             //What to do when zooming on the ellipses
-            console.log(`ZOOOMING`);
+            console.log(`ZOOOMING & Transform == ${transform}`);
             g.attr("transform", transform);
+            const toolTips=g.selectAll("tool-tip");
+            toolTips.style("font-size", Math.floor(transform.scale)+"px");
         }));
 
         if(props.selectedArea !== null){
@@ -157,10 +167,8 @@
 
             //translate the view to selected element
              const zoom = d3.zoom<SVGSVGElement, unknown>().on("zoom", ({transform}) => {
-                g.attr("transform", (transform = transform));
+                g.attr("transform", (transform = transform)); // Causes errors :P ==>  MoleView.vue:160 Error: <g> attribute transform: Expected number, "translate(-Infinity,10) sc…".
                 console.log(`Zooming to x = ${x}, y = ${y}`);
-
-
 
             });
 

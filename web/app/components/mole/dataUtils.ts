@@ -105,19 +105,23 @@ export function filterDataByAbstraction(stats : any , abstraction: string){
     }
     return null;
 };
+const DEFAULT_COLOR = "#d9d9d9";
 
 export function getMoleColour(value: number | null, thresholds: number[]): string{
-    if (value === null || thresholds === undefined) return "#d9d9d9";
-    let color = "#d9d9d9";
+    if (value === null || thresholds === undefined) return DEFAULT_COLOR;
+    let color = DEFAULT_COLOR;
 
     for (let i = 0; i < thresholds.length; i++) {
       const threshold = thresholds[i];
       if (threshold !== undefined && value <= threshold) {
-        return colorRamp[i] ?? "#d9d9d9"; // fallback to defalut colour if index i doesnt exist
+        color =colorRamp[i] ?? DEFAULT_COLOR; 
+        console.log(`Mole colour with value ${value} = ${color}`);
+        return color; // fallback to defalut colour if index i doesnt exist
       }
     }
-
-    return colorRamp[colorRamp.length - 1] ?? "#d9d9d9";
+    color = colorRamp[colorRamp.length - 1] ?? DEFAULT_COLOR;
+    console.log(`Mole colour with value ${value} = ${color}`);
+    return color; 
   };
 
 // Source: https://stackoverflow.com/questions/1983648/replace-spaces-with-dashes-and-make-all-letters-lower-case
