@@ -25,7 +25,6 @@ export const useWaterBodyPins = (
           clickHandler(a, body, body._id);
         })
         .addEventListener("mouseover", (a) => {
-          console.log(a);
           a.target.openPopup();
         })
         .addEventListener("mouseout", (a) => {
