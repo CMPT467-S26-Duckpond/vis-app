@@ -40,15 +40,11 @@ const choroplethLayerGroup = new L.LayerGroup();
 let choroplethGeoJson: L.GeoJSON;
 
 onMounted(() => {
-  // pane for choropleth so it sits below lakes
-  map.createPane(PANE_NAME);
-  map.getPane(PANE_NAME)!.style.zIndex = "250"; // default tile layer is 200, points/vectors are usually 400
-
   choroplethLayerGroup.addTo(map);
 });
 
 onUnmounted(() => {
-  map.getPane(PANE_NAME)?.remove();
+  choroplethLayerGroup.removeFrom(map);
 });
 
 function drawChoropleth() {
@@ -163,7 +159,6 @@ function drawChoropleth() {
   const thresholds = buildThresholds(metricValues);
 
   choroplethGeoJson = L.geoJSON(bounds as any, {
-    pane: "choroplethPane",
     style: (feature) => {
       const val = getMetric(feature);
       let fillColor = getColor(val, thresholds);
@@ -227,16 +222,18 @@ function drawChoropleth() {
       });
 
       const tooltipIso = getIso(feature);
-      // const isEstimatedRegion =
-      //   abs === "Regions"
-      //     ? stats.regions?.[stats.countries?.[tooltipIso]?.region]?.estimate
-      //     : false;
-      // const isEstimatedContinent =
-      //   abs === "Continents"
-      //     ? stats.continents?.[stats.countries?.[tooltipIso]?.continent]
-      //         ?.estimate
-      //     : false;
-      const isEstimated = true;
+      const isEstimatedRegion =
+        abs === "Regions"
+          ? stats.regions?.[stats.countries?.[tooltipIso]?.region!]?.values[
+              targetVariable!
+            ]?.[targetYear!]?.estimate
+          : false;
+      const isEstimatedContinent =
+        abs === "Continents"
+          ? stats.continents?.[stats.countries?.[tooltipIso]?.continent!]
+              ?.values[targetVariable!]?.[targetYear!]?.estimate
+          : false;
+      const isEstimated = isEstimatedRegion || isEstimatedContinent;
 
       const metric = getMetric(feature);
       const hasNoData = metric === null;

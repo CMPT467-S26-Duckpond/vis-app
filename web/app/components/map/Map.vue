@@ -8,23 +8,17 @@
     <div ref="map" class="size-full" />
     <span
       class="absolute top-0 left-0 z-1000 w-full h-full flex items-center justify-center bg-gray-600/50"
-      v-if="activeBodyPending"
+      v-if="isLoading"
     >
       <LoadingSpan />
     </span>
   </div>
 
-  <ActiveBodyPolygon
-    v-if="map && activeBodyData"
-    :map="map"
-    :activeBodyData="activeBodyData"
-  />
-
-  <ActiveBodyVis
-    v-if="map && activeBodyData"
-    :map="map"
-    :activeBodyData="activeBodyData"
-    :waterConsumedKM3="drainPercent"
+  <LakeVis
+    v-if="map && mapMode === 'lakeVis'"
+    :map="toRaw(map)"
+    :waterConsumedKM3="500"
+    @loading="isLoading = $event"
   />
 
   <!--
@@ -35,11 +29,11 @@
     Easy enough fix fortunately (once you know about it...)
   -->
   <Choropleth
-    v-if="map"
+    v-if="map && mapMode === 'choropleth'"
     :map="toRaw(map)"
     :abstraction="abstraction"
-    :targetVariable="targetVariable"
-    :targetYear="targetYear"
+    targetVariable="Agricultural water withdrawal [10^9 m3/year]"
+    targetYear="2022"
     @area-clicked="(name) => emit('area-clicked', name)"
   />
 
@@ -48,13 +42,13 @@
 
 <script setup lang="ts">
 import * as L from "leaflet";
-import { useWaterBodyPins } from "~/composables/useWaterBodyPins";
+import type { MapModes } from "~/pages/test.vue";
 import LoadingSpan from "../ui/LoadingSpan.vue";
-import ActiveBodyPolygon from "./features/ActiveBodyPolygon.vue";
-import ActiveBodyVis from "./features/ActiveBodyVis.vue";
 import Choropleth from "./features/Choropleth.vue";
+import LakeVis from "./features/LakeVis.vue";
 
 const props = defineProps<{
+  mapMode: MapModes;
   abstraction?: string;
   showPins?: boolean;
   targetVariable?: string;
@@ -65,13 +59,7 @@ const emit = defineEmits<{ (e: "area-clicked", name: string): void }>();
 const mapRef = useTemplateRef("map");
 const map = ref<L.Map>();
 
-const selectedBody = ref<string>();
-const drainPercent = ref(0);
-
-const pinsLayer = useWaterBodyPins((a, body, id) => {
-  map.value?.setView(a.latlng, 8);
-  selectedBody.value = id;
-});
+const isLoading = ref(false);
 
 function loadMap() {
   if (!map.value) return;
@@ -84,19 +72,6 @@ function loadMap() {
       'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
   }).addTo(map.value!);
 }
-
-const { data: activeBodyData, pending: activeBodyPending } = useAsyncData(
-  "activeBodyData",
-  () => {
-    if (!selectedBody.value) throw new Error("No body selected");
-    return $fetch(
-      `/api/supplementary/waterBodies/${selectedBody.value}?includeBathymetry=true`
-    );
-  },
-  {
-    watch: [() => selectedBody.value]
-  }
-);
 
 onMounted(() => {
   // Quick way to make sure we do in fact have our map div available
@@ -112,18 +87,5 @@ onMounted(() => {
   map.value.getPane("choroplethPane")!.style.zIndex = "250"; // default tile layer is 200, points/vectors are usually 400
 
   loadMap();
-  updatePinLayer();
 });
-
-function updatePinLayer() {
-  if (!map.value) return;
-
-  if (props.showPins) {
-    pinsLayer.waterBodyLayer.addTo(toRaw(map.value));
-  } else {
-    pinsLayer.waterBodyLayer.removeFrom(toRaw(map.value));
-  }
-}
-
-watch(() => props.showPins, updatePinLayer);
 </script>
