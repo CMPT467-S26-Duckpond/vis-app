@@ -1,61 +1,32 @@
-<template>
-  <UButton @click="refresh()">Refresh</UButton>
-  {{ maxDepth }}
-  <USlider :min="0" :max="100" v-model="drainPercent" />
-</template>
+<template></template>
 
 <script setup lang="ts">
-import type { BathymetryPoint } from "~~/server/models/MapWaterBody";
+import type {
+  BathymetryPoint,
+  IWaterBody
+} from "~~/server/models/MapWaterBody";
+import { clamp } from "es-toolkit";
 import * as L from "leaflet";
 import { makeBathymetryPoint } from "./renderBathymetry";
 
-const { map, selectedBody } = defineProps<{
+const { map, activeBodyData, waterConsumedKM3 } = defineProps<{
   map: L.Map | L.LayerGroup;
-  selectedBody: string;
+  activeBodyData: IWaterBody;
+  waterConsumedKM3: number;
 }>();
 
-const { data: activeBodyData, refresh } = useAsyncData(
-  "activeBodyData",
-  () => {
-    if (!selectedBody) throw new Error("No body selected");
-    return $fetch(
-      `/api/supplementary/waterBodies/${selectedBody}?includeBathymetry=true`
-    );
-  },
-  {
-    watch: [() => selectedBody]
-  }
-);
-
-const drainPercent = ref(0);
+const drainedPercent = computed(() => {
+  return clamp(0, 100, (waterConsumedKM3 / activeBodyData.volumeKM3) * 100);
+});
 
 const maxDepth = computed(() => {
-  if (!activeBodyData.value) return 0;
-
-  const bathymetryData = activeBodyData.value.depthBathymetry;
+  const bathymetryData = activeBodyData.depthBathymetry;
   if (!bathymetryData) return 0;
 
   return Math.max(...bathymetryData.map((d) => d.z));
 });
 
-watch(maxDepth, (newData) => {
-  if (!newData) return;
-
-  drainPercent.value = 0;
-});
-
-let shapeLayer: L.LayerGroup;
 let depthLayer: L.LayerGroup;
-
-onMounted(() => {
-  depthLayer = new L.LayerGroup().addTo(map);
-  shapeLayer = new L.LayerGroup().addTo(map);
-});
-
-onUnmounted(() => {
-  shapeLayer.remove();
-  depthLayer.remove();
-});
 
 type BathymetryMapBlip = { data: BathymetryPoint; point: L.Circle };
 
@@ -65,9 +36,7 @@ export type BathymetryPointMap = Map<number, BathymetryMapBlip[]>;
  * Group bathymetry points by depth for more performant rendering and filtering
  */
 const bathMap = computed<BathymetryPointMap>(() => {
-  if (!activeBodyData.value) return new Map();
-
-  const bathymetryData = activeBodyData.value.depthBathymetry;
+  const bathymetryData = activeBodyData.depthBathymetry;
   if (!bathymetryData) return new Map();
 
   const map: BathymetryPointMap = new Map();
@@ -89,11 +58,11 @@ const bathMap = computed<BathymetryPointMap>(() => {
 
 const volumePercentRemainingAtDepth = computed(() => {
   if (!bathMap.value.size) return [];
-  if (!activeBodyData.value?.depthBathymetry) return [];
+  if (!activeBodyData.depthBathymetry) return [];
 
   const allDepths = Array.from(bathMap.value.keys()).sort((a, b) => a - b);
   allDepths.push(maxDepth.value + 1);
-  const allPoints = activeBodyData.value.depthBathymetry.length;
+  const allPoints = activeBodyData.depthBathymetry.length;
 
   const percentagesWithNext = allDepths.map((depth, index) => {
     const pointsDeeperThanDepth = allDepths
@@ -112,7 +81,7 @@ const volumePercentRemainingAtDepth = computed(() => {
 const thresholdDepth = computed(() => {
   return (
     volumePercentRemainingAtDepth.value.find(
-      (entry) => entry.percentageRemaining <= (100 - drainPercent.value) / 100
+      (entry) => entry.percentageRemaining <= (100 - drainedPercent.value) / 100
     )?.depth ?? 0
   );
 });
@@ -154,29 +123,28 @@ function updateBathymetryLayer() {
 }
 
 function updateMap() {
-  if (!activeBodyData.value) return;
-
-  shapeLayer.clearLayers();
   depthLayer.clearLayers();
   currentlyRenderedPoints.clear();
-
-  L.geoJSON(activeBodyData.value.geoJSON, {
-    style: {
-      color: "grey",
-      fillColor: "grey",
-      fillOpacity: 0.75
-    }
-  })
-    .setZIndex(-1)
-    .addTo(shapeLayer);
 
   // Chonky boi
   updateBathymetryLayer();
 }
 
-watch(activeBodyData, (newValue) => {
-  if (!newValue) return;
+onMounted(() => {
+  depthLayer = new L.LayerGroup().addTo(map);
 
   updateMap();
 });
+
+onUnmounted(() => {
+  depthLayer.remove();
+});
+
+watch(
+  () => activeBodyData,
+  (newValue) => {
+    if (!newValue) return;
+    updateMap();
+  }
+);
 </script>

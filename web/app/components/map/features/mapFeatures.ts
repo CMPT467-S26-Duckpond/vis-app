@@ -1,3 +1,4 @@
+import type { GeoJsonObject } from "geojson";
 import * as L from "leaflet";
 
 export async function setMapPins(
@@ -11,7 +12,11 @@ export async function setMapPins(
     response.forEach((waterBody) => {
       L.marker(waterBody.position.reverse() as any, {})
         .bindPopup(
-          `<strong>${waterBody.name}</strong> <br> Surface Area: ${waterBody.surfaceAreaKM2.toLocaleString()} km²`
+          [
+            `<strong>${waterBody.name}</strong>`,
+            `Surface Area: ${waterBody.surfaceAreaKM2.toLocaleString()} km²`,
+            `Volume: ${waterBody.volumeKM3.toLocaleString()} km³`
+          ].join("<br>")
         )
         .addEventListener("click", (a) => {
           a.target.openPopup();

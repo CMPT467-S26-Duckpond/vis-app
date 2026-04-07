@@ -10,7 +10,7 @@ export interface BathymetryPoint {
   z: number;
 }
 
-interface IWaterBody {
+export interface IWaterBody {
   name: string;
   /**
    * Mean position of the feature. Returned as a tuple of [longitude, latitude]

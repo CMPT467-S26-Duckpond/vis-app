@@ -6,24 +6,36 @@
   -->
   <div ref="map" style="height: 500px" />
 
-  <ActiveBody
-    v-if="selectedBody && map"
-    :selected-body="selectedBody"
+  <ActiveBodyPolygon
+    v-if="map && activeBodyData"
     :map="map"
+    :activeBodyData="activeBodyData"
   />
+
+  <ActiveBodyVis
+    v-if="map && activeBodyData"
+    :map="map"
+    :activeBodyData="activeBodyData"
+    :waterConsumedKM3="drainPercent"
+  />
+
+  <div style="height: 20px" />
+
+  <USlider :min="0" :max="1000000" v-model="drainPercent" />
 </template>
 
 <script setup lang="ts">
 import * as L from "leaflet";
 import { ref, onMounted, useTemplateRef } from "vue";
-
-import ActiveBody from "./ActiveBody.vue";
-import { setMapPins } from "./mapPins";
+import ActiveBodyPolygon from "./features/ActiveBodyPolygon.vue";
+import ActiveBodyVis from "./features/ActiveBodyVis.vue";
+import { setMapPins } from "./features/mapFeatures";
 
 const mapRef = useTemplateRef("map");
 const map = ref<L.Map>();
 
 const selectedBody = ref<string>();
+const drainPercent = ref(0);
 
 function loadMap() {
   if (!map.value) return;
@@ -36,6 +48,19 @@ function loadMap() {
       'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
   }).addTo(map.value!);
 }
+
+const { data: activeBodyData } = useAsyncData(
+  "activeBodyData",
+  () => {
+    if (!selectedBody.value) throw new Error("No body selected");
+    return $fetch(
+      `/api/supplementary/waterBodies/${selectedBody.value}?includeBathymetry=true`
+    );
+  },
+  {
+    watch: [() => selectedBody.value]
+  }
+);
 
 onMounted(() => {
   // Quick way to make sure we do in fact have our map div available
