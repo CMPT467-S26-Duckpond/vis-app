@@ -29,6 +29,13 @@ def mean(values):
     return sum(values) / len(values)
 
 
+def volume_conversion_table(entry):
+    if entry["unit"].endswith("Q4243638"):  # cubic kilometers
+        return float(entry["amount"])
+    if entry["unit"].endswith("Q5195628"):  # cubic hectometers
+        return float(entry["amount"]) * 0.001
+
+
 if __name__ == "__main__":
     client = MongoClient(MONGO_URL)
     client.drop_database(DATABASE_NAME)
@@ -69,24 +76,40 @@ if __name__ == "__main__":
                 if surfaceElevation is None or volume is None or area is None:
                     continue
 
-                surfaceElevation = mean(
-                    [
-                        float(claim["mainsnak"]["datavalue"]["value"]["amount"])
-                        for claim in surfaceElevation
-                    ]
-                )
-                volume = mean(
-                    [
-                        float(claim["mainsnak"]["datavalue"]["value"]["amount"])
-                        for claim in volume
-                    ]
-                )
-                area = mean(
-                    [
-                        float(claim["mainsnak"]["datavalue"]["value"]["amount"])
-                        for claim in area
-                    ]
-                )
+                try:
+                    surfaceElevation = mean(
+                        [
+                            float(claim["mainsnak"]["datavalue"]["value"]["amount"])
+                            for claim in surfaceElevation
+                            if claim["mainsnak"]["datavalue"]["value"]["unit"].endswith(
+                                "Q11573"
+                            )
+                        ]
+                    )
+                    volume = mean(
+                        [
+                            volume_conversion_table(
+                                claim["mainsnak"]["datavalue"]["value"]
+                            )
+                            for claim in volume
+                            if volume_conversion_table(
+                                claim["mainsnak"]["datavalue"]["value"]
+                            )
+                            is not None
+                        ]
+                    )
+                    area = mean(
+                        [
+                            float(claim["mainsnak"]["datavalue"]["value"]["amount"])
+                            for claim in area
+                            if claim["mainsnak"]["datavalue"]["value"]["unit"].endswith(
+                                "Q712226"
+                            )
+                        ]
+                    )
+                except ZeroDivisionError:
+                    # If there are no claims of the right unit, skip this item
+                    continue
 
                 toUpload = {
                     "name": item["name"],
