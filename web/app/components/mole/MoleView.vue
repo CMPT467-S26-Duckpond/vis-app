@@ -105,7 +105,10 @@
                 .attr('rx', Math.round(data.value *.03))
                 .attr('ry', Math.round(data.value *.03))
                 .style('fill', getMoleColour(data.value,abstraction))
-                .on("mouseover", () => tooltip.style("visibility", "visible"))
+                .on("mouseover", () => {
+                    tooltip.style("visibility", "visible")
+                    console.log(`Moused over ${data.name}`);
+                })
                 .on("mouseout", () => tooltip.style("visibility", "hidden"));
                 xPositon = xPositon + (data.value *.03 + padding); // Put centre at 1/2 the distance of the elipse width
                 
@@ -148,7 +151,7 @@
             const x: number = Number((selectedData.attr("cx")));
             const y: number = Number(selectedData.attr("cy"));
             const elipseWidth: number = Number(selectedData.attr("rx"));
-            const elipseHeight = (selectedData.attr("rx"));
+            const elipseHeight : number = Number(selectedData.attr("rx"));
             console.log(` x = ${x}, y = ${y}, width = ${elipseWidth}, height = ${elipseHeight}`);
 
             //translate the view to selected element
@@ -160,11 +163,14 @@
 
             });
 
-            
+            // triggers and applies the zoom behaviour
+            const scaleFactorHeight = (height/elipseHeight);
+            const scaleFactorWidth = (width/elipseWidth);
+            const scaleFactor = scaleFactorHeight; // this is what makes the elipse zoom in too far
             moleFrame.transition()
             .duration(750)
             .call(zoom.transform,
-            d3.zoomIdentity.translate(x, y).scale(elipseWidth)
+            d3.zoomIdentity.translate((-x *scaleFactor) + (width*0.5), y).scale(scaleFactor) 
         );
 
         }
