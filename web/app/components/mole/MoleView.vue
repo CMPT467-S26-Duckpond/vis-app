@@ -145,13 +145,27 @@
             }
             console.log(`Selected data = ${selectedData}`);
             // get coordinate locations of selecte element
-            const x = (selectedData.attr("cx"));
-            const y = (selectedData.attr("cy"));
-            const elipseWidth = (selectedData.attr("rx"));
+            const x: number = Number((selectedData.attr("cx")));
+            const y: number = Number(selectedData.attr("cy"));
+            const elipseWidth: number = Number(selectedData.attr("rx"));
             const elipseHeight = (selectedData.attr("rx"));
             console.log(` x = ${x}, y = ${y}, width = ${elipseWidth}, height = ${elipseHeight}`);
 
             //translate the view to selected element
+             const zoom = d3.zoom<SVGSVGElement, unknown>().on("zoom", ({transform}) => {
+                g.attr("transform", (transform = transform));
+                console.log(`Zooming to x = ${x}, y = ${y}`);
+
+
+
+            });
+
+            
+            moleFrame.transition()
+            .duration(750)
+            .call(zoom.transform,
+            d3.zoomIdentity.translate(x, y).scale(elipseWidth)
+        );
 
         }
 
@@ -175,9 +189,6 @@
     );
     watch(props,fetchElipseData);
 
-    function drawMole(){
-        console.log("Drawing Mole");
-    }
 
 
 

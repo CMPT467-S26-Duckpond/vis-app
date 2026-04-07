@@ -46,6 +46,7 @@ export function getMoleColour(value : any , abstraction: string){
   return 'green';
 };
 
+// Source: https://stackoverflow.com/questions/1983648/replace-spaces-with-dashes-and-make-all-letters-lower-case
 export function createID(input: (string | undefined | null)) {
     if (!input)
         return '';
