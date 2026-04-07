@@ -4,11 +4,15 @@
 
     All we need to do is give Vue a way to target the element (ref attribute) and give it some styling
   -->
-  <div
-    ref="map"
-    class="absolute inset-0 w-full h-full"
-    style="min-height: 500px"
-  />
+  <div class="size-full">
+    <div ref="map" class="size-full" />
+    <span
+      class="absolute top-0 left-0 z-1000 w-full h-full flex items-center justify-center bg-gray-600/50"
+      v-if="activeBodyPending"
+    >
+      <LoadingSpan />
+    </span>
+  </div>
 
   <ActiveBodyPolygon
     v-if="map && activeBodyData"
@@ -45,6 +49,7 @@
 <script setup lang="ts">
 import * as L from "leaflet";
 import { useWaterBodyPins } from "~/composables/useWaterBodyPins";
+import LoadingSpan from "../ui/LoadingSpan.vue";
 import ActiveBodyPolygon from "./features/ActiveBodyPolygon.vue";
 import ActiveBodyVis from "./features/ActiveBodyVis.vue";
 import Choropleth from "./features/Choropleth.vue";
@@ -80,7 +85,7 @@ function loadMap() {
   }).addTo(map.value!);
 }
 
-const { data: activeBodyData } = useAsyncData(
+const { data: activeBodyData, pending: activeBodyPending } = useAsyncData(
   "activeBodyData",
   () => {
     if (!selectedBody.value) throw new Error("No body selected");
