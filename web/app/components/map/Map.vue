@@ -4,7 +4,11 @@
 
     All we need to do is give Vue a way to target the element (ref attribute) and give it some styling
   -->
-  <div ref="map" style="height: 500px" />
+  <div
+    ref="map"
+    class="absolute inset-0 w-full h-full"
+    style="min-height: 500px"
+  />
 
   <ActiveBodyPolygon
     v-if="map && activeBodyData"
@@ -19,23 +23,50 @@
     :waterConsumedKM3="drainPercent"
   />
 
-  <div style="height: 20px" />
+  <!--
+    Why is there a "toRaw" on map?
+    https://stackoverflow.com/a/73588115
 
-  <USlider :min="0" :max="1000000" v-model="drainPercent" />
+    Vue seems to be too smart for it's own good and breaks some leaflet behaviour.
+    Easy enough fix fortunately (once you know about it...)
+  -->
+  <Choropleth
+    v-if="map"
+    :map="toRaw(map)"
+    :abstraction="abstraction"
+    :targetVariable="targetVariable"
+    :targetYear="targetYear"
+    @area-clicked="(name) => emit('area-clicked', name)"
+  />
+
+  <div style="height: 20px" />
 </template>
 
 <script setup lang="ts">
 import * as L from "leaflet";
-import { ref, onMounted, useTemplateRef } from "vue";
+import { useWaterBodyPins } from "~/composables/useWaterBodyPins";
 import ActiveBodyPolygon from "./features/ActiveBodyPolygon.vue";
 import ActiveBodyVis from "./features/ActiveBodyVis.vue";
-import { setMapPins } from "./features/mapFeatures";
+import Choropleth from "./features/Choropleth.vue";
+
+const props = defineProps<{
+  abstraction?: string;
+  showPins?: boolean;
+  targetVariable?: string;
+  targetYear?: string;
+}>();
+const emit = defineEmits<{ (e: "area-clicked", name: string): void }>();
 
 const mapRef = useTemplateRef("map");
 const map = ref<L.Map>();
 
 const selectedBody = ref<string>();
 const drainPercent = ref(0);
+
+const pinsLayer = useWaterBodyPins((a, body, id) => {
+  map.value?.setView(a.latlng, 8);
+  selectedBody.value = id;
+});
 
 function loadMap() {
   if (!map.value) return;
@@ -71,12 +102,23 @@ onMounted(() => {
   // Leaflet let's you pick a specific set of "map tiles" to use as the background. I played around here: https://leaflet-extras.github.io/leaflet-providers/preview/
   map.value = L.map(mapRef.value);
 
-  const pinLayer = new L.LayerGroup().addTo(map.value);
+  // pane for choropleth so it sits below lakes
+  map.value.createPane("choroplethPane");
+  map.value.getPane("choroplethPane")!.style.zIndex = "250"; // default tile layer is 200, points/vectors are usually 400
 
   loadMap();
-
-  setMapPins(pinLayer, map.value, async (event, id) => {
-    selectedBody.value = id;
-  });
+  updatePinLayer();
 });
+
+function updatePinLayer() {
+  if (!map.value) return;
+
+  if (props.showPins) {
+    pinsLayer.waterBodyLayer.addTo(toRaw(map.value));
+  } else {
+    pinsLayer.waterBodyLayer.removeFrom(toRaw(map.value));
+  }
+}
+
+watch(() => props.showPins, updatePinLayer);
 </script>
