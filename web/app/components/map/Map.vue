@@ -68,19 +68,6 @@ const pinsLayer = useWaterBodyPins((a, body, id) => {
   selectedBody.value = id;
 });
 
-watch(
-  () => props.showPins,
-  (newVal) => {
-    if (!map.value) return;
-
-    if (newVal) {
-      pinsLayer.waterBodyLayer.addTo(toRaw(map.value));
-    } else {
-      pinsLayer.waterBodyLayer.removeFrom(toRaw(map.value));
-    }
-  }
-);
-
 function loadMap() {
   if (!map.value) return;
 
@@ -120,5 +107,18 @@ onMounted(() => {
   map.value.getPane("choroplethPane")!.style.zIndex = "250"; // default tile layer is 200, points/vectors are usually 400
 
   loadMap();
+  updatePinLayer();
 });
+
+function updatePinLayer() {
+  if (!map.value) return;
+
+  if (props.showPins) {
+    pinsLayer.waterBodyLayer.addTo(toRaw(map.value));
+  } else {
+    pinsLayer.waterBodyLayer.removeFrom(toRaw(map.value));
+  }
+}
+
+watch(() => props.showPins, updatePinLayer);
 </script>
