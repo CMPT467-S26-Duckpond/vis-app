@@ -7,7 +7,7 @@ import type {
 } from "~~/server/models/MapWaterBody";
 import { clamp } from "es-toolkit";
 import * as L from "leaflet";
-import { makeBathymetryPoint } from "./renderBathymetry";
+import { makeBathymetryPoint } from "../renderBathymetry";
 
 const { map, activeBodyData, waterConsumedKM3 } = defineProps<{
   map: L.Map | L.LayerGroup;

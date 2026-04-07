@@ -1,6 +1,11 @@
 <template></template>
 
 <script setup lang="ts">
+import type { AquastatPayload } from "~~/server/api/aquastat.get";
+import type {
+  AquastatVariables,
+  AquastatYears
+} from "~~/server/utils/aquastatVars";
 import * as L from "leaflet";
 
 const PANE_NAME = "choroplethPane";
@@ -8,8 +13,8 @@ const PANE_NAME = "choroplethPane";
 const { map, abstraction, targetVariable, targetYear } = defineProps<{
   map: L.Map;
   abstraction?: string;
-  targetVariable?: string;
-  targetYear?: string;
+  targetVariable?: AquastatVariables;
+  targetYear?: AquastatYears;
 }>();
 
 const emits = defineEmits<{
@@ -22,7 +27,7 @@ const { data: boundariesData } = useAsyncData("worldBounds", () =>
 const { data: aquastatData } = useAsyncData(
   "aquastatData",
   () =>
-    $fetch<any>("/api/aquastat", {
+    $fetch<AquastatPayload>("/api/aquastat", {
       query: {
         targetVariable,
         targetYear
@@ -35,15 +40,11 @@ const choroplethLayerGroup = new L.LayerGroup();
 let choroplethGeoJson: L.GeoJSON;
 
 onMounted(() => {
-  // pane for choropleth so it sits below lakes
-  map.createPane(PANE_NAME);
-  map.getPane(PANE_NAME)!.style.zIndex = "250"; // default tile layer is 200, points/vectors are usually 400
-
   choroplethLayerGroup.addTo(map);
 });
 
 onUnmounted(() => {
-  map.getPane(PANE_NAME)?.remove();
+  choroplethLayerGroup.removeFrom(map);
 });
 
 function drawChoropleth() {
@@ -58,7 +59,7 @@ function drawChoropleth() {
   choroplethLayerGroup.clearLayers();
 
   const bounds: any = boundariesData.value;
-  const stats: any = aquastatData.value;
+  const stats = aquastatData.value;
   const abs = abstraction || "Countries";
 
   const getIso = (feature: any) => {
@@ -66,7 +67,7 @@ function drawChoropleth() {
     if (iso === "-99" || !iso) {
       const featureName = feature.properties.name;
       const found = Object.keys(stats.countries || {}).find(
-        (k) => stats.countries[k].name === featureName
+        (k) => stats.countries[k]?.name === featureName
       );
       if (found) return found;
     }
@@ -74,19 +75,26 @@ function drawChoropleth() {
   };
 
   const getMetric = (feature: any): number | null => {
+    if (!targetVariable || !targetYear) return null;
+
     const iso = getIso(feature);
     if (abs === "Countries") {
-      const value = stats.countries?.[iso]?.value;
+      const value =
+        stats.countries?.[iso]?.values[targetVariable]?.[targetYear]?.value;
       return typeof value === "number" && value >= 0 ? value : null;
     }
     if (abs === "Continents") {
       const c = stats.countries?.[iso]?.continent;
-      const value = c ? stats.continents?.[c]?.value : undefined;
+      const value = c
+        ? stats.continents?.[c]?.values[targetVariable]?.[targetYear]?.value
+        : undefined;
       return typeof value === "number" && value > 0 ? value : null;
     }
     if (abs === "Regions") {
       const r = stats.countries?.[iso]?.region;
-      const value = r ? stats.regions?.[r]?.value : undefined;
+      const value = r
+        ? stats.regions?.[r]?.values[targetVariable]?.[targetYear]?.value
+        : undefined;
       return typeof value === "number" && value > 0 ? value : null;
     }
     return null;
@@ -151,7 +159,6 @@ function drawChoropleth() {
   const thresholds = buildThresholds(metricValues);
 
   choroplethGeoJson = L.geoJSON(bounds as any, {
-    pane: "choroplethPane",
     style: (feature) => {
       const val = getMetric(feature);
       let fillColor = getColor(val, thresholds);
@@ -217,12 +224,14 @@ function drawChoropleth() {
       const tooltipIso = getIso(feature);
       const isEstimatedRegion =
         abs === "Regions"
-          ? stats.regions?.[stats.countries?.[tooltipIso]?.region]?.estimate
+          ? stats.regions?.[stats.countries?.[tooltipIso]?.region!]?.values[
+              targetVariable!
+            ]?.[targetYear!]?.estimate
           : false;
       const isEstimatedContinent =
         abs === "Continents"
-          ? stats.continents?.[stats.countries?.[tooltipIso]?.continent]
-              ?.estimate
+          ? stats.continents?.[stats.countries?.[tooltipIso]?.continent!]
+              ?.values[targetVariable!]?.[targetYear!]?.estimate
           : false;
       const isEstimated = isEstimatedRegion || isEstimatedContinent;
 

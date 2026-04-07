@@ -1,7 +1,7 @@
 <template>
   <UDashboardGroup>
     <UDashboardSidebar variant="inset" resizable>
-      EVERYTHING IS FINE
+      <SelectVariables :mapMode />
     </UDashboardSidebar>
 
     <div class="p-4 w-full h-10/12">
@@ -26,7 +26,7 @@
         />
       </div>
       <div class="overflow-hidden rounded-xl size-full mb-4">
-        <Map show-pins />
+        <Map :mapMode />
       </div>
 
       <div class="p-4 w-full h-2/12 rounded-xl">SLIDER GOES HERE</div>
@@ -36,10 +36,11 @@
 
 <script setup lang="ts">
 import Map from "~/components/map/Map.vue";
+import SelectVariables from "~/components/selector/SelectVariables.vue";
 import SelectionIcon from "~/components/ui/SelectionIcon.vue";
 
-type MapModes = "lakeVis" | "choropleth";
+export type MapModes = "lakeVis" | "choropleth";
 
-const mapMode = ref<MapModes>("lakeVis");
+const mapMode = ref<MapModes>("choropleth");
 const showMole = ref(false);
 </script>
