@@ -93,6 +93,15 @@ function drawChoropleth() {
   };
 
   const colorRamp = [
+    "#006400",
+    "#0B7A0B",
+    "#1E8E1E",
+    "#2FAE2F",
+    "#66D966",
+    "#90EE90",
+    "#B6F2B6",
+    "#D8F7D8",
+    "#FFFFFF",
     "#FFEDA0",
     "#FED976",
     "#FEB24C",
@@ -125,7 +134,7 @@ function drawChoropleth() {
   };
 
   const getColor = (value: number | null, thresholds: number[]) => {
-    if (value === null) return "#d9d9d9";
+    if (value === null) return "#888888";
 
     for (let i = 0; i < thresholds.length; i++) {
       const threshold = thresholds[i];
@@ -205,11 +214,27 @@ function drawChoropleth() {
         }
       });
 
-      const metric = getMetric(feature);
-      const tooltipValue =
-        metric === null ? "no data" : `${Math.round(metric * 100) / 100}`;
-      let name = feature.properties.name;
       const tooltipIso = getIso(feature);
+      const isEstimatedRegion =
+        abs === "Regions"
+          ? stats.regions?.[stats.countries?.[tooltipIso]?.region]?.estimate
+          : false;
+      const isEstimatedContinent =
+        abs === "Continents"
+          ? stats.continents?.[stats.countries?.[tooltipIso]?.continent]
+              ?.estimate
+          : false;
+      const isEstimated = isEstimatedRegion || isEstimatedContinent;
+
+      const metric = getMetric(feature);
+      const hasNoData = metric === null;
+      const shownDataNumber =
+        metric !== null ? Math.round(metric * 100) / 100 : null;
+      const tooltipValue = hasNoData
+        ? "no data"
+        : `${shownDataNumber}${isEstimated ? "*" : ""}`;
+
+      let name = feature.properties.name;
       if (abs === "Continents")
         name = stats.countries?.[tooltipIso]?.continent || name;
       if (abs === "Regions")

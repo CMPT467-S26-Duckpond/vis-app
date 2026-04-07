@@ -73,24 +73,34 @@ export default defineEventHandler(async (event) => {
 
     if (type === 'region' || (type === 'country' && region)) {
       if (!payload.regions[region]) {
-        payload.regions[region] = { name: region, totalValue: 0, count: 0, value: 0 };
+        payload.regions[region] = { name: region, totalValue: 0, count: 0, value: 0, estimate: false };
       }
       if (type === 'country' && value > 0) {
         payload.regions[region].totalValue += value;
         payload.regions[region].count += 1;
         payload.regions[region].value = payload.regions[region].totalValue / payload.regions[region].count;
+        payload.regions[region].estimate = true;
       }
     }
 
-    if (type === 'continent' || (type === 'country' && continent)) {     
+    if (type === 'country' && continent) {     
       if (!payload.continents[continent]) {
-        payload.continents[continent] = { name: continent, totalValue: 0, count: 0, value: 0 };
+        payload.continents[continent] = { name: continent, totalValue: 0, count: 0, value: 0, estimate: false };
       }
-      if (type === 'country' && value > 0) {
+      if (value > 0) {
         payload.continents[continent].totalValue += value;
         payload.continents[continent].count += 1;
         payload.continents[continent].value = payload.continents[continent].totalValue / payload.continents[continent].count;
+        payload.continents[continent].estimate = true;
       }
+    }
+
+    if (type === 'region' && value > 0) {
+      payload.regions[region] = { name: region, totalValue: value, count: 1, value, estimate: false };
+    }
+
+    if (type === 'continent' && value > 0) {     
+      payload.continents[continent] = { name: continent, totalValue: value, count: 1, value, estimate: false };
     }
   });
 
@@ -109,11 +119,11 @@ export default defineEventHandler(async (event) => {
   });
 
   // manual data for unrecognized/disputed/special territories in GeoJSON
-  payload.countries['KOS'] = { name: 'Kosovo', value: 0, region: 'Southern Europe', continent: 'Europe', iso3: 'KOS' };
-  payload.countries['NNC'] = { name: 'Northern Cyprus', value: 0, region: 'Western Asia', continent: 'Asia', iso3: 'NNC' };
-  payload.countries['SOM'] = { name: 'Somaliland', value: 0, region: 'Sub-Saharan Africa', continent: 'Africa', iso3: 'SOM' };
+  payload.countries['KOS'] = { name: 'Kosovo', value: -1, region: 'Southern Europe', continent: 'Europe', iso3: 'KOS' };
+  payload.countries['NNC'] = { name: 'Northern Cyprus', value: -1, region: 'Western Asia', continent: 'Asia', iso3: 'NNC' };
+  payload.countries['SOM'] = { name: 'Somaliland', value: -1, region: 'Sub-Saharan Africa', continent: 'Africa', iso3: 'SOM' };
   payload.countries['BAY'] = { name: 'Baykonur Cosmodrome', value: 0, region: 'Central Asia', continent: 'Asia', iso3: 'BAY' };
-  payload.countries['SIA'] = { name: 'Siachen Glacier', value: 0, region: 'Southern Asia', continent: 'Asia', iso3: 'SIA' };
+  payload.countries['SIA'] = { name: 'Siachen Glacier', value: -1, region: 'Southern Asia', continent: 'Asia', iso3: 'SIA' };
 
   // Taiwan (TWN) has empty region and continent values
   if (payload.countries['TWN']) {
@@ -121,7 +131,7 @@ export default defineEventHandler(async (event) => {
     payload.countries['TWN'].region = 'Eastern Asia';
     payload.countries['TWN'].continent = 'Asia';
   } else {
-    payload.countries['TWN'] = { name: 'Taiwan', value: 0, region: 'Eastern Asia', continent: 'Asia', iso3: 'TWN' };
+    payload.countries['TWN'] = { name: 'Taiwan', value: -1, region: 'Eastern Asia', continent: 'Asia', iso3: 'TWN' };
   }
 
   return payload;
