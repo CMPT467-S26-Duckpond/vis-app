@@ -162,9 +162,9 @@ function updateMap() {
 
   L.geoJSON(activeBodyData.value.geoJSON, {
     style: {
-      color: "blue",
-      fillColor: "blue",
-      fillOpacity: 0.5
+      color: "grey",
+      fillColor: "grey",
+      fillOpacity: 0.75
     }
   })
     .setZIndex(-1)

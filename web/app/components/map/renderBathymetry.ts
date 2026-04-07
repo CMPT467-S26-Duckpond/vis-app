@@ -5,8 +5,8 @@ import * as L from "leaflet";
 type RGB = [r: number, g: number, b: number];
 
 const gradient: [RGB, RGB] = [
-  [0, 255, 0],
-  [255, 0, 0]
+  [0, 128, 255],
+  [0, 0, 100]
 ];
 
 function getColorForDepth(depth: number, maxDepth: number): string {
@@ -23,7 +23,7 @@ export function makeBathymetryPoint(
 ): L.Circle {
   return L.circle([data.latitude, data.longitude], {
     color: getColorForDepth(data.z, maxDepth),
-    radius: 250,
+    radius: 500,
     fillOpacity: 1
   });
 }
