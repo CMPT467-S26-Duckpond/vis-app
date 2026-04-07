@@ -1,4 +1,4 @@
-type Years =
+export type AquastatYears =
   | "1962"
   | "1963"
   | "1964"
@@ -61,19 +61,45 @@ type Years =
   | "2021"
   | "2022";
 
-type Variables =
-  | "Agricultural water withdrawal [10^9 m3/year]"
-  | "Agricultural water withdrawal as % of total water withdrawal [%]"
-  | "Fresh groundwater withdrawal [10^9 m3/year]"
-  | "Fresh surface water withdrawal [10^9 m3/year]"
-  | "Industrial water withdrawal [10^9 m3/year]"
-  | "Industrial water withdrawal as % of total water withdrawal [%]"
-  | "Irrigation water requirement [10^9 m3/year]"
-  | "Municipal water withdrawal [10^9 m3/year]"
-  | "SDG 6.4.2. Agricultural Sector Contribution to Water Stress [%]"
-  | "SDG 6.4.2. Industrial Sector Contribution to Water Stress [%]"
-  | "SDG 6.4.2. Municipal Sector Contribution to Water Stress [%]"
-  | "SDG 6.4.2. Water Stress [%]"
-  | "Total freshwater withdrawal [10^9 m3/year]"
-  | "Total water withdrawal [10^9 m3/year]"
-  | "Total water withdrawal per capita [m3/inhab/year]";
+export function strIsYear(str: string): boolean {
+  return /^\d{4}$/.test(str);
+}
+
+export function isAquastatYear(str: string): str is AquastatYears {
+  return strIsYear(str) && parseInt(str) >= 1962 && parseInt(str) <= 2022;
+}
+
+export const aquastatVariables = [
+  "Agricultural water withdrawal [10^9 m3/year]",
+  "Agricultural water withdrawal as % of total water withdrawal [%]",
+  "Fresh groundwater withdrawal [10^9 m3/year]",
+  "Fresh surface water withdrawal [10^9 m3/year]",
+  "Industrial water withdrawal [10^9 m3/year]",
+  "Industrial water withdrawal as % of total water withdrawal [%]",
+  "Irrigation water requirement [10^9 m3/year]",
+  "Municipal water withdrawal [10^9 m3/year]",
+  "SDG 6.4.2. Agricultural Sector Contribution to Water Stress [%]",
+  "SDG 6.4.2. Industrial Sector Contribution to Water Stress [%]",
+  "SDG 6.4.2. Municipal Sector Contribution to Water Stress [%]",
+  "SDG 6.4.2. Water Stress [%]",
+  "Total freshwater withdrawal [10^9 m3/year]",
+  "Total water withdrawal [10^9 m3/year]",
+  "Total water withdrawal per capita [m3/inhab/year]"
+] as const;
+
+export type AquastatVariables = (typeof aquastatVariables)[number];
+
+export function isAquastatVariable(str: string): str is AquastatVariables {
+  return (aquastatVariables as readonly string[]).includes(str);
+}
+
+type AquastatTypeVar = "country" | "region" | "continent";
+
+export type AquastatRowEntry = {
+  /** Country */
+  name: string;
+  type: AquastatTypeVar;
+  variable: AquastatVariables;
+  continent: string;
+  region: string;
+} & Record<AquastatYears, number>;
