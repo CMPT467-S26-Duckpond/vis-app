@@ -2,7 +2,7 @@
 <template>
     <div>
         <h2>
-            Mole Viz
+            Year: {{year}}
         </h2>
         <div id = "mole-container">
             <!-- Idea: moleId = abstraction_name + "mole" -->
@@ -23,7 +23,7 @@
     const svg = ref<SVGSVGElement>(null);
 
     import Mole from "~/components/mole/Mole.vue";
-    import {filterDataByAbstraction, fetchData, printData} from "~/components/mole/dataUtils";
+    import {filterDataByAbstraction, fetchData, printData, getMoleColour, createID} from "~/components/mole/dataUtils";
     import {addEllipseTest} from "~/components/mole/TestCases";
     import * as d3 from "d3";
     import { ref, onMounted, useTemplateRef } from "vue";
@@ -44,7 +44,11 @@
         targetVariable?: string;
         targetVariableY?: string;
         targetYear?: string;
+        selectedArea?: string | null;
     }>();
+
+    const year = ref(props.targetYear);
+
     const abstraction = props.abstraction || "Countries";
 
     // Fetch the Width data of the elipse
@@ -58,12 +62,14 @@
     
     // Zoom D3 Example: https://observablehq.com/@d3/programmatic-zoom?collection=@d3/d3-zoom
     const fetchElipseData = async () => {
+        year.value = props.targetYear;
         const moleFrame = d3.select<SVGSVGElement, unknown>(svg.value);
         const width = 928;
         const height = 300;
         moleFrame.attr("viewBox", [0, 0, width, height]);
         const g = moleFrame.append("g").attr("cursor", "grab");
 
+        // Remove all previously drawn data ellipses
         g.selectAll('*').remove();
         //moleFrame.attr('width', width).attr('height', height);
         
@@ -84,20 +90,26 @@
         let xPositon = 0;
         const padding = 5;
         
+        // For every abstract data type we create an elipse with an id == data.name
         widthSubset2.forEach((data: any, index) => {
 
-            console.log(`Item = ${data}, index = ${index}`);
+            //console.log(`Item = ${data}, index = ${index}`);
             if(data.value > 0){
                 printData(data, "Elipse data");
-                
+                var tooltip = g.append("div").style("position", "absolute").style("visibility", "hidden").text(data.name);
                 xPositon = xPositon + (data.value *.03) + padding ; // Put centre at 1/2 the distance of the elipse width
-                g.append('ellipse')
+                const newEllipse = g.append('ellipse')
+                .attr("id", createID(`${data.name}`))
                 .attr('cx', xPositon)
                 .attr('cy', 10)
                 .attr('rx', Math.round(data.value *.03))
                 .attr('ry', Math.round(data.value *.03))
-                .style('fill', 'green');
+                .style('fill', getMoleColour(data.value,abstraction))
+                .on("mouseover", () => tooltip.style("visibility", "visible"))
+                .on("mouseout", () => tooltip.style("visibility", "hidden"));
                 xPositon = xPositon + (data.value *.03 + padding); // Put centre at 1/2 the distance of the elipse width
+                
+                console.log(` assigned id == #${newEllipse.attr("id")}`);
             }
 
 
@@ -112,25 +124,41 @@
             g.attr("transform", transform);
         }));
 
+        if(props.selectedArea !== null){
+        // const
+            // get abstraction element that was selected
+            const selectedData = g.select(createID(`#${props.selectedArea}`));
+
+            if(selectedData.empty()){
+                console.log(`selected id =  #${createID(props.selectedArea)}`);
+                console.log(`Selected data = ${selectedData} IS EMPTY`);
+
+            }else{
+                
+                console.log(`Selected data = ${selectedData} ~NOT~ EMPTY`);
+            }
+            if(selectedData === undefined){
+                console.log(`Selected data = ${selectedData} IS UNDEFINDED`);
+            }else{
+                console.log(`Selected data = ${selectedData} IS ~NOT~ UNDEFINDED`);
+
+            }
+            console.log(`Selected data = ${selectedData}`);
+            // get coordinate locations of selecte element
+            const x = (selectedData.attr("cx"));
+            const y = (selectedData.attr("cy"));
+            const elipseWidth = (selectedData.attr("rx"));
+            const elipseHeight = (selectedData.attr("rx"));
+            console.log(` x = ${x}, y = ${y}, width = ${elipseWidth}, height = ${elipseHeight}`);
+
+            //translate the view to selected element
+
+        }
+
         
         
     };
 
-    function dragstarted(){
-        console.log(`Starting Drag`);
-        // d3.select(this).raise();
-        // g.attr("cursor", "grabbing");
-    }
-
-     function dragged(event, d) {
-        console.log(`Dragging`);
-        //d3.select(this).attr("cx", d.x = event.x).attr("cy", d.y = event.y);
-    }
-
-    function dragended(){
-
-
-    }
 
     //TODO: Dynamically create a mole view based on the number of countries/area is in the selected level hierarchy.
     console.log(`aqua stat data width = ${widthSubset.value}`);
@@ -140,7 +168,7 @@
 
     //Lifecycle Hooks
     onMounted(()=>{
-
+        
         fetchElipseData()
     
     }

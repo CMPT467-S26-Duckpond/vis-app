@@ -30,6 +30,35 @@ export function filterDataByAbstraction(stats : any , abstraction: string){
     return null;
 };
 
+export function getMoleColour(value : any , abstraction: string){
+    const colorRamp = [
+    "#FFEDA0",
+    "#FED976",
+    "#FEB24C",
+    "#FD8D3C",
+    "#FC4E2A",
+    "#E31A1C",
+    "#BD0026",
+    "#800026"
+  ];
+
+
+  return 'green';
+};
+
+export function createID(input: (string | undefined | null)) {
+    if (!input)
+        return '';
+    if (input===undefined)
+      return '';
+
+    // make lower case and trim
+    var slug = input.replace(/\s+/g, '-').toLowerCase();
+
+    return slug;
+}
+
+
 // Composable useFetch Docs: https://nuxt.com/docs/4.x/api/composables/use-fetch
 // https://nuxt.com/docs/4.x/getting-started/data-fetching
 export async function fetchData(theTargetVariable : any, theTargetYear: any){

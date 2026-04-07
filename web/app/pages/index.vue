@@ -38,7 +38,8 @@
         :abstraction="activeAbstraction"
         :target-variable-x="targetVariable"
         :target-variable-y="targetVariableY"
-        :target-year="targetYear"/>
+        :target-year="targetYear"
+        :selectedArea = "selectedMapArea"/>
     <!-- Map Section -->
     <div class="flex-grow relative">
       <Map
