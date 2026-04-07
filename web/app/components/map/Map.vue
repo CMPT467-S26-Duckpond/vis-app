@@ -134,6 +134,7 @@ function drawChoropleth() {
     "#800026"
   ];
 
+  // Values are "metricValues"
   const buildThresholds = (values: number[]) => {
     if (values.length < 2) return [];
 
@@ -141,6 +142,7 @@ function drawChoropleth() {
     const thresholds: number[] = [];
     const lastValue = sorted[sorted.length - 1] ?? 0;
 
+    // Assigns a colour based on 
     for (let i = 1; i < colorRamp.length; i++) {
       const position = (sorted.length - 1) * (i / colorRamp.length);
       const lowerIndex = Math.floor(position);
@@ -164,6 +166,8 @@ function drawChoropleth() {
     return colorRamp[colorRamp.length - 1];
   };
 
+  // Map a feature to a metric
+  // 
   const metricValues = (bounds as any).features
     .map((feature: any) => getMetric(feature))
     .filter((value: number | null): value is number => value !== null);

@@ -23,7 +23,7 @@
     const svg = ref<SVGSVGElement>(null);
 
     import Mole from "~/components/mole/Mole.vue";
-    import {filterDataByAbstraction, fetchData, printData, getMoleColour, createID} from "~/components/mole/dataUtils";
+    import {filterDataByAbstraction, fetchData, printData, getMoleColour, createID, getThresholdValues} from "~/components/mole/dataUtils";
     import {addEllipseTest} from "~/components/mole/TestCases";
     import * as d3 from "d3";
     import { ref, onMounted, useTemplateRef } from "vue";
@@ -78,7 +78,7 @@
             props.targetVariable, 
             props.targetYear);
         const heightData :Promise<any> = await fetchData(props.targetVariableY, props.targetYear);
-        
+        const thresholds = getThresholdValues(heightData, props.abstraction);
         const filteredData = (filterDataByAbstraction(widthData, abstraction));
         
         widthSubset.value = filteredData ? Object.values(filteredData) : [];
@@ -96,6 +96,7 @@
             //console.log(`Item = ${data}, index = ${index}`);
             if(data.value > 0){
                 printData(data, "Elipse data");
+                const moleColour = getMoleColour(data.value, thresholds);
                 var tooltip = g.append("div").style("position", "absolute").style("visibility", "hidden").text(data.name);
                 xPositon = xPositon + (data.value *.03) + padding ; // Put centre at 1/2 the distance of the elipse width
                 const newEllipse = g.append('ellipse')
@@ -104,7 +105,7 @@
                 .attr('cy', 10)
                 .attr('rx', Math.round(data.value *.03))
                 .attr('ry', Math.round(data.value *.03))
-                .style('fill', getMoleColour(data.value,abstraction))
+                .style('fill', moleColour)
                 .on("mouseover", () => {
                     tooltip.style("visibility", "visible")
                     console.log(`Moused over ${data.name}`);
