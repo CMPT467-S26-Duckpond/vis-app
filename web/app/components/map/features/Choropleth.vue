@@ -60,6 +60,7 @@ function drawChoropleth() {
   const bounds: any = boundariesData.value;
   const stats: any = aquastatData.value;
   const abs = abstraction || "Countries";
+  const measurement = targetVariable?.match(/\[(.+)\]\s*$/)?.[1] || "";
 
   const getIso = (feature: any) => {
     let iso = feature.properties["ISO3166-1-Alpha-3"];
@@ -232,7 +233,7 @@ function drawChoropleth() {
         metric !== null ? Math.round(metric * 100) / 100 : null;
       const tooltipValue = hasNoData
         ? "no data"
-        : `${shownDataNumber}${isEstimated ? "*" : ""}`;
+        : `${shownDataNumber}${measurement ? ` ${measurement}` : ""}${isEstimated ? "*" : ""}`;
 
       let name = feature.properties.name;
       if (abs === "Continents")
