@@ -25,9 +25,13 @@ function getIso(feature: any, stats:any){
   };
 
 function getMetric(stats: any, abstraction: string, feature: any){
+  console.log(`Calling getMetric(${stats}, ${abstraction}, ${feature})`);
   const iso = getIso(feature, stats);
       if (abstraction === "Countries") {
         const value = stats.countries?.[iso]?.value;
+        //console.log(`\t Metric Value = ${value}`);
+        //console.log(`\t Metric iso = ${iso}`);
+        console.log(`\t Metric returned = ${typeof value === "number" && value >= 0 ? value : null}`);
         return typeof value === "number" && value >= 0 ? value : null;
       }
       if (abstraction === "Continents") {
@@ -46,32 +50,49 @@ function getMetric(stats: any, abstraction: string, feature: any){
 
 // Same function as getMetricValues() in Map.vue
 export function getThresholdValues(stats: any, theAbstraction: string | undefined){
+  console.log(`getThresholdValues(${stats}, ${theAbstraction})`);
   const abstraction = theAbstraction || "Countries";
-  const metricValues=(bounds as any).features.map((feature: any ) => {
-    getMetric(stats,abstraction, feature)
-    });
+  const metricValues = (bounds as any).features.map((feature: any ) => {
+    const metricRes=getMetric(stats,abstraction, feature); //PROBLEM LINE
+    console.log(`Metric value = ${metricRes}`);
+    return metricRes;
+    }).filter((value: number | null): value is number => value !== null); 
+    
     const thresholds= buildThresholds(metricValues);
-
+    console.log(`metricValues = ${metricValues}`);
+    console.log(`thresholds = ${thresholds}`);
     return thresholds;
   };
 
 export function buildThresholds(values: number[]){
   if (values.length < 2) return [];
-
+  
+  console.log(`values = ${values}`);
     const sorted = [...values].sort((a, b) => a - b);
+    console.log(`sorted = ${sorted}`);
     const thresholds: number[] = [];
     const lastValue = sorted[sorted.length - 1] ?? 0;
-
+    console.log(`last value = ${lastValue}`);
+    
     // Assigns a colour based on 
     for (let i = 1; i < colorRamp.length; i++) {
       const position = (sorted.length - 1) * (i / colorRamp.length);
       const lowerIndex = Math.floor(position);
       const upperIndex = Math.ceil(position);
+      
       const lowerValue = sorted[lowerIndex] ?? lastValue;
       const upperValue = sorted[upperIndex] ?? lowerValue;
+
+      console.log(`position = ${position}`);
+      console.log(`lower value = ${lowerValue}`);
+      console.log(`upperValue = ${upperValue}`);
+      console.log(`upperValue = ${upperValue}`);
+      console.log(`lowerValue = ${lowerValue}`);
+    
+      console.log(` pushed value = ${lowerValue} + (${upperValue} - ${lowerValue}) * (${position} - ${lowerIndex})`);
+      console.log(`pushed value = ${lowerValue + (upperValue - lowerValue) * (position - lowerIndex)}`);
       thresholds.push(lowerValue + (upperValue - lowerValue) * (position - lowerIndex));
     }
-
     return thresholds;
 
 }

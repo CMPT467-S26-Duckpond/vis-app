@@ -78,7 +78,9 @@
             props.targetVariable, 
             props.targetYear);
         const heightData :Promise<any> = await fetchData(props.targetVariableY, props.targetYear);
-        const thresholds = getThresholdValues(heightData, props.abstraction);
+        console.log(`Calling getThresholdValues()`);    
+        const heightThresholds = getThresholdValues(heightData, props.abstraction);
+        console.log(`Thresholds == ${heightThresholds}`);
         const filteredData = (filterDataByAbstraction(widthData, abstraction));
         
         widthSubset.value = filteredData ? Object.values(filteredData) : [];
@@ -96,7 +98,7 @@
             //console.log(`Item = ${data}, index = ${index}`);
             if(data.value > 0){
                 printData(data, "Elipse data");
-                const moleColour = getMoleColour(data.value, thresholds);
+                const moleColour = getMoleColour(data.value, heightThresholds);
                 xPositon = xPositon + (data.value *.03) + padding ; // Put centre at 1/2 the distance of the elipse width
                 //var tooltip = g.append("text").style("position", "absolute").style("visibility", "hidden").text(data.name);
                 const newEllipse = g.append('ellipse')
@@ -132,7 +134,7 @@
         .scaleExtent([1, 100])
         .on("zoom", ({transform}) => {
             //What to do when zooming on the ellipses
-            console.log(`ZOOOMING & Transform == ${transform}`);
+            //console.log(`ZOOOMING & Transform == ${transform}`);
             g.attr("transform", transform);
             const toolTips=g.selectAll("tool-tip");
             toolTips.style("font-size", Math.floor(transform.scale)+"px");
@@ -168,7 +170,7 @@
             //translate the view to selected element
              const zoom = d3.zoom<SVGSVGElement, unknown>().on("zoom", ({transform}) => {
                 g.attr("transform", (transform = transform)); // Causes errors :P ==>  MoleView.vue:160 Error: <g> attribute transform: Expected number, "translate(-Infinity,10) sc…".
-                console.log(`Zooming to x = ${x}, y = ${y}`);
+                //console.log(`Zooming to x = ${x}, y = ${y}`);
 
             });
 
