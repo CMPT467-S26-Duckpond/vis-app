@@ -4,9 +4,9 @@ import { getAquastatCSV } from "./aquastat.get";
 interface AquastatOptionsResponse {
   variables: AquastatVariables[];
   abstractionMembers: {
-    regions: string[];
-    countries: string[];
-    continents: string[];
+    regions: { label: string; value: string }[];
+    countries: { label: string; value: string }[];
+    continents: { label: string; value: string }[];
   };
 
   years: AquastatYears[];
@@ -17,7 +17,7 @@ interface AquastatOptionsResponse {
 }
 
 export default defineEventHandler(async () => {
-  const { dataRecords, availableVariables, headerYears } =
+  const { dataRecords, availableVariables, headerYears, isoRecords } =
     await getAquastatCSV();
 
   const years = headerYears.sort((a, b) => Number(a) - Number(b));
@@ -29,29 +29,34 @@ export default defineEventHandler(async () => {
     });
   }
 
-  const countries = Array.from(
-    new Set(
-      dataRecords
-        .filter((record) => record.record["type"] === "country")
-        .map((record) => record.record.name)
-    )
+  const countryRecords = dataRecords.filter(
+    (record) => record.record["type"] === "country"
   );
+
+  const countries = Array.from(
+    new Set(countryRecords.map((r) => r.record.name))
+  ).map((record) => ({
+    label: record,
+    value: isoRecords.find((i) => i.name === record)?.["alpha-2"]
+  }));
 
   const regions = Array.from(
-    new Set(
-      dataRecords
-        .filter((record) => record.record["type"] === "region")
-        .map((record) => record.record.name)
-    )
-  );
+    new Set(countryRecords.map((record) => record.record.region))
+  )
+    .filter((m) => Boolean(m))
+    .map((record) => ({
+      label: record,
+      value: record
+    }));
 
   const continents = Array.from(
-    new Set(
-      dataRecords
-        .filter((record) => record.record["type"] === "continent")
-        .map((record) => record.record.name)
-    )
-  );
+    new Set(countryRecords.map((record) => record.record.continent))
+  )
+    .filter((m) => Boolean(m))
+    .map((record) => ({
+      label: record,
+      value: record
+    }));
 
   return {
     variables: availableVariables,

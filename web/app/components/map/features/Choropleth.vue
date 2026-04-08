@@ -8,12 +8,14 @@ import type {
 } from "~~/server/utils/aquastatVars";
 import * as L from "leaflet";
 
-const { map, abstraction, targetVariable, targetYear } = defineProps<{
-  map: L.Map;
-  abstraction?: string;
-  targetVariable?: AquastatVariables;
-  targetYear?: AquastatYears;
-}>();
+const { map, abstraction, targetVariable, targetYear, aquastatData } =
+  defineProps<{
+    map: L.Map;
+    abstraction: string;
+    targetVariable?: AquastatVariables;
+    targetYear: AquastatYears;
+    aquastatData?: AquastatPayload;
+  }>();
 
 const emits = defineEmits<{
   (e: "area-clicked", name: string): void;
@@ -22,25 +24,12 @@ const emits = defineEmits<{
 const { data: boundariesData } = useAsyncData("worldBounds", () =>
   $fetch("/world_countries.geojson")
 );
-const { data: aquastatData } = useAsyncData(
-  "aquastatData",
-  () =>
-    $fetch<AquastatPayload>("/api/aquastat", {
-      query: {
-        targetVariable,
-        targetYear
-      }
-    }),
-  { watch: [() => targetVariable, () => targetYear] }
-);
 
 const choroplethLayerGroup = new L.LayerGroup();
 let choroplethGeoJson: L.GeoJSON;
 
 onMounted(() => {
   choroplethLayerGroup.addTo(map);
-
-  console.log(abstraction, targetVariable);
 });
 
 onUnmounted(() => {
@@ -48,22 +37,17 @@ onUnmounted(() => {
 });
 
 function drawChoropleth() {
-  if (
-    !map ||
-    !boundariesData.value ||
-    !aquastatData.value ||
-    !choroplethLayerGroup
-  )
+  if (!map || !boundariesData.value || !aquastatData || !choroplethLayerGroup)
     return;
 
   choroplethLayerGroup.clearLayers();
 
   const bounds: any = boundariesData.value;
-  const stats = aquastatData.value;
+  const stats = aquastatData;
   const abs = abstraction || "Countries";
 
   const getIso = (feature: any) => {
-    let iso = feature.properties["ISO3166-1-Alpha-3"];
+    let iso = feature.properties["ISO3166-1-Alpha-2"];
     if (iso === "-99" || !iso) {
       const featureName = feature.properties.name;
       const found = Object.keys(stats.countries || {}).find(
@@ -254,7 +238,7 @@ function drawChoropleth() {
   }).addTo(choroplethLayerGroup);
 }
 
-watch([() => abstraction, boundariesData, aquastatData], drawChoropleth, {
+watch(() => [abstraction, boundariesData, aquastatData], drawChoropleth, {
   deep: true
 });
 </script>

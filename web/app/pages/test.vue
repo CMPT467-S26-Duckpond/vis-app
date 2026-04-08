@@ -14,10 +14,11 @@
           </p>
           <USelect
             v-model="selectedAbstraction"
-            :items="abstractionOptions"
+            :items="availableAbstractions"
             placeholder="Select abstraction level"
             class="w-full"
             size="xl"
+            :ui="{ content: 'min-w-fit' }"
           />
 
           <!-- Select specific members of abstraction -->
@@ -31,12 +32,13 @@
               (Windows) or Command (Mac) key while clicking.
             </p>
             <USelectMenu
-              v-model="selectedAbstractionMembers"
+              v-model="abstractionMembers"
               :items="aquastatOptions?.abstractionMembers[selectedAbstraction]"
               :placeholder="`Select ${selectedAbstraction}`"
               class="w-full"
               size="xl"
               multiple
+              :ui="{ content: 'min-w-fit' }"
             />
           </div>
         </div>
@@ -71,7 +73,9 @@
             You can also select a lake by clicking on its pin in the map.
           </p>
           <USelectMenu
-            :model-value="uiSelectedLake"
+            :model-value="
+              lakeOptions.find((o) => o.value === selectedLake)?.label ?? ''
+            "
             @update:model-value="onLakeUpdate"
             :items="lakeOptions"
             placeholder="Select a lake"
@@ -79,8 +83,6 @@
             size="xl"
           />
         </div>
-        {{ selectedAbstraction }}
-        {{ selectedVariable }}
       </div>
     </UDashboardSidebar>
 
@@ -113,26 +115,88 @@
           v-model:selected-lake="selectedLake"
           :target-variable="selectedVariable"
           :abstraction="selectedAbstraction"
+          :abstractionMembers="abstractionMemberValues"
+          :targetYear="targetYear"
+          :drainProgress="drainProgress"
+          :aquastatData="aquastatData"
         />
       </div>
 
-      <div class="p-4 w-full h-2/12 rounded-xl">SLIDER GOES HERE</div>
+      <div class="p-4 w-full h-2/12 rounded-xl">
+        <div class="flex items-center gap-2" v-if="mapMode === 'choropleth'">
+          <UButton
+            :label="isPlaying ? 'Pause' : 'Play'"
+            color="primary"
+            variant="soft"
+            size="sm"
+            :disabled="!availableYears.length"
+            @click="togglePlayback"
+          />
+          <div class="flex flex-col gap-0.5 flex-1 min-w-0">
+            <USlider
+              v-model="yearSliderIndex"
+              :min="0"
+              :max="Math.max(availableYears.length - 1, 0)"
+              :step="1"
+              :disabled="!availableYears.length"
+              class="w-full"
+            />
+            <div
+              class="flex items-center justify-between text-[10px] leading-none text-gray-500 tabular-nums"
+            >
+              <span>{{ aquastatOptions?.minYear || "—" }}</span>
+              <span class="font-medium text-gray-700">{{
+                currentYearLabel || "—"
+              }}</span>
+              <span>{{ aquastatOptions?.maxYear || "—" }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2" v-if="mapMode === 'lakeVis'">
+          <USelectMenu
+            v-model="targetYear"
+            :items="availableYears"
+            placeholder="Select a year"
+            size="xl"
+            :ui="{ content: 'min-w-fit' }"
+          />
+          <div class="flex flex-col gap-0.5 flex-1 min-w-0">
+            <USlider
+              v-model="drainProgress"
+              :min="0"
+              :max="365"
+              :step="1"
+              :disabled="!availableYears.length"
+              class="w-full"
+            />
+            <div
+              class="flex items-center justify-between text-[10px] leading-none text-gray-500 tabular-nums"
+            >
+              <span>January 1st</span>
+              <span>Day {{ drainProgress }} </span>
+              <span>December 31st</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </UDashboardGroup>
 </template>
 
 <script setup lang="ts">
-import type { SelectItem } from "@nuxt/ui";
-import type { AquastatVariables } from "~~/server/utils/aquastatVars";
+import type { LatLngTuple } from "leaflet";
+import type { AquastatPayload } from "~~/server/api/aquastat.get";
+import {
+  type AquastatYears,
+  type AquastatVariables
+} from "~~/server/utils/aquastatVars";
 import Map from "~/components/map/Map.vue";
-import SelectVariables from "~/components/selector/SelectVariables.vue";
 import SelectionIcon from "~/components/ui/SelectionIcon.vue";
 
-const abstractionOptions: SelectItem[] = [
-  { label: "Countries", value: "countries" },
-  { label: "Regions", value: "regions" },
-  { label: "Continents", value: "continents" }
-];
+export type CustomSelectItem = {
+  label: string;
+  value: string;
+};
 
 const { data: aquastatOptions } = useFetch("/api/aquastat-options");
 
@@ -140,9 +204,89 @@ const { data: availableLakes } = useFetch(
   "/api/supplementary/waterBodies/simple"
 );
 
+const targetYear = ref<AquastatYears>("2022");
+const isPlaying = ref(false);
+
+const drainProgress = ref(0);
+
+let playbackTimer: ReturnType<typeof setInterval> | null = null;
+function stopPlayback() {
+  if (playbackTimer) {
+    clearInterval(playbackTimer);
+    playbackTimer = null;
+  }
+  isPlaying.value = false;
+}
+
+function stepYear(direction: 1 | -1) {
+  const years = availableYears.value;
+  if (!years.length) return;
+
+  const nextIndex = yearSliderIndex.value + direction;
+  if (nextIndex >= years.length) {
+    stopPlayback();
+    return;
+  }
+
+  if (nextIndex < 0) {
+    yearSliderIndex.value = years.length - 1;
+    return;
+  }
+
+  yearSliderIndex.value = nextIndex;
+}
+
+function togglePlayback() {
+  if (isPlaying.value) {
+    stopPlayback();
+    return;
+  }
+
+  if (!availableYears.value.length) return;
+
+  isPlaying.value = true;
+  playbackTimer = setInterval(() => {
+    if (!availableYears.value.length) {
+      stopPlayback();
+      return;
+    }
+
+    stepYear(1);
+  }, 1400);
+}
+
+const availableYears = computed(() => aquastatOptions.value?.years || []);
+
+const currentYearLabel = computed(() => {
+  return targetYear.value || availableYears.value[yearSliderIndex.value] || "";
+});
+
+const yearSliderIndex = computed({
+  get() {
+    const years = availableYears.value;
+    if (!years.length) return 0;
+
+    const selectedIndex = years.indexOf(targetYear.value);
+    return selectedIndex >= 0 ? selectedIndex : years.length - 1;
+  },
+  set(nextIndex: number) {
+    const years = availableYears.value;
+    if (!years.length) return;
+
+    const clampedIndex = Math.min(
+      Math.max(Math.round(nextIndex), 0),
+      years.length - 1
+    );
+    const nextYear = years[clampedIndex];
+    if (nextYear) {
+      targetYear.value = nextYear;
+    }
+  }
+});
+
 const lakeOptions = computed(() => {
   return (
-    availableLakes.value?.map<SelectItem>((lake) => ({
+    availableLakes.value?.map<CustomSelectItem>((lake) => ({
       label: lake.name,
       value: lake._id
     })) ?? []
@@ -159,7 +303,7 @@ export type AquastatAbstractions = "countries" | "regions" | "continents";
 
 const map = useTemplateRef("map");
 const selectedAbstraction = ref<AquastatAbstractions>("countries");
-const abstractionMembers = ref<string[]>([]);
+const abstractionMembers = ref<CustomSelectItem[]>([]);
 const selectedVariable = ref<AquastatVariables>(
   "Agricultural water withdrawal [10^9 m3/year]"
 );
@@ -181,17 +325,17 @@ watch(selectedAbstraction, () => {
   abstractionMembers.value = [] as any; // Reset variable selection when changing abstraction
 });
 
-const uiSelectedLake = ref<SelectItem | undefined>(undefined);
-
-function onLakeUpdate(newLake: SelectItem) {
-  uiSelectedLake.value = newLake;
+function onLakeUpdate(newLake: CustomSelectItem) {
   selectedLake.value = newLake.value;
   if (map.value?.map) {
     const lakeData = availableLakes.value?.find(
       (lake) => lake._id === newLake.value
     );
     if (lakeData) {
-      map.value?.map.setView(lakeData.position.toReversed(), 8);
+      map.value?.map.setView(
+        lakeData.position.toReversed() as any as LatLngTuple,
+        8
+      );
     }
   }
 }
@@ -219,5 +363,42 @@ const availableUsageVars = computed(() => {
     );
   }
   return aquastatOptions.value?.variables || [];
+});
+
+const abstractionMemberValues = computed(() => {
+  return abstractionMembers.value.map((m) => m.value);
+});
+
+const { data: aquastatData } = useAsyncData(
+  "aquastatData",
+  () =>
+    $fetch<AquastatPayload>("/api/aquastat", {
+      query: {
+        targetVariable: selectedVariable.value,
+        targetYear: targetYear.value
+      }
+    }),
+  { watch: [() => selectedVariable.value, () => targetYear.value] }
+);
+
+const abstractionOptions: CustomSelectItem[] = [
+  { label: "Countries", value: "countries" },
+  { label: "Regions", value: "regions" },
+  { label: "Continents", value: "continents" }
+];
+
+const availableAbstractions = computed<CustomSelectItem[]>(() => {
+  // No country allowed in lakeVis
+  if (mapMode.value === "lakeVis") {
+    return abstractionOptions.filter((o) => o.value !== "countries");
+  } else {
+    return abstractionOptions;
+  }
+});
+
+watch(availableAbstractions, (newVal) => {
+  if (!newVal.find((o) => o.value === selectedAbstraction.value)) {
+    selectedAbstraction.value = newVal[0]?.value as AquastatAbstractions;
+  }
 });
 </script>
