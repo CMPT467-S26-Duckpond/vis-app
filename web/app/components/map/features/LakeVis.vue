@@ -26,23 +26,26 @@ const { map } = defineProps<{
 
 const emit = defineEmits<{ (e: "loading", isLoading: boolean): void }>();
 
-const selectedBody = ref<string>();
+const selectedLake = defineModel("selectedLake", {
+  type: String,
+  default: undefined
+});
 
-const pinsLayer = useWaterBodyPins((a, body, id) => {
+const pinsLayer = useWaterBodyPins((a, _, id) => {
   map.setView(a.latlng, 8);
-  selectedBody.value = id;
+  selectedLake.value = id;
 });
 
 const { data: activeBodyData, pending: activeBodyPending } = useAsyncData(
   "activeBodyData",
   () => {
-    if (!selectedBody.value) throw new Error("No body selected");
+    if (!selectedLake.value) throw new Error("No body selected");
     return $fetch(
-      `/api/supplementary/waterBodies/${selectedBody.value}?includeBathymetry=true`
+      `/api/supplementary/waterBodies/${selectedLake.value}?includeBathymetry=true`
     );
   },
   {
-    watch: [() => selectedBody.value]
+    watch: [() => selectedLake.value]
   }
 );
 

@@ -8,8 +8,6 @@ import type {
 } from "~~/server/utils/aquastatVars";
 import * as L from "leaflet";
 
-const PANE_NAME = "choroplethPane";
-
 const { map, abstraction, targetVariable, targetYear } = defineProps<{
   map: L.Map;
   abstraction?: string;
@@ -41,6 +39,8 @@ let choroplethGeoJson: L.GeoJSON;
 
 onMounted(() => {
   choroplethLayerGroup.addTo(map);
+
+  console.log(abstraction, targetVariable);
 });
 
 onUnmounted(() => {
@@ -78,19 +78,19 @@ function drawChoropleth() {
     if (!targetVariable || !targetYear) return null;
 
     const iso = getIso(feature);
-    if (abs === "Countries") {
+    if (abs === "countries") {
       const value =
         stats.countries?.[iso]?.values[targetVariable]?.[targetYear]?.value;
       return typeof value === "number" && value >= 0 ? value : null;
     }
-    if (abs === "Continents") {
+    if (abs === "continents") {
       const c = stats.countries?.[iso]?.continent;
       const value = c
         ? stats.continents?.[c]?.values[targetVariable]?.[targetYear]?.value
         : undefined;
       return typeof value === "number" && value > 0 ? value : null;
     }
-    if (abs === "Regions") {
+    if (abs === "regions") {
       const r = stats.countries?.[iso]?.region;
       const value = r
         ? stats.regions?.[r]?.values[targetVariable]?.[targetYear]?.value
