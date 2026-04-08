@@ -7,11 +7,12 @@ import type {
   AquastatYears
 } from "~~/server/utils/aquastatVars";
 import * as L from "leaflet";
+import type { AquastatAbstractions } from "~/pages/test.vue";
 
 const { map, abstraction, targetVariable, targetYear, aquastatData } =
   defineProps<{
     map: L.Map;
-    abstraction: string;
+    abstraction: AquastatAbstractions;
     targetVariable?: AquastatVariables;
     targetYear: AquastatYears;
     aquastatData?: AquastatPayload;
@@ -149,8 +150,8 @@ function drawChoropleth() {
 
       return {
         fillColor: fillColor,
-        weight: abs === "Countries" ? 1 : 0, // hide borders to visually fuse regions/continents
-        opacity: abs === "Countries" ? 1 : 0,
+        weight: abs === "countries" ? 1 : 0, // hide borders to visually fuse regions/continents
+        opacity: abs === "countries" ? 1 : 0,
         color: "white",
         fillOpacity: 0.6
       };
@@ -169,18 +170,18 @@ function drawChoropleth() {
             const region = stats.countries?.[iso]?.region;
 
             if (
-              abs === "Continents" &&
+              abs === "continents" &&
               targetContinent &&
               targetContinent === continent
             ) {
               l.setStyle({ weight: 2, color: "#222", opacity: 1 });
             } else if (
-              abs === "Regions" &&
+              abs === "regions" &&
               targetRegion &&
               targetRegion === region
             ) {
               l.setStyle({ weight: 2, color: "#222", opacity: 1 });
-            } else if (abs === "Countries" && iso === targetIso) {
+            } else if (abs === "countries" && iso === targetIso) {
               l.setStyle({ weight: 2, color: "#222", opacity: 1 });
             }
           });
@@ -196,10 +197,10 @@ function drawChoropleth() {
         },
         click: () => {
           const iso = getIso(feature);
-          let clickedName = feature.properties.name;
-          if (abs === "Continents")
+          let clickedName = feature.properties["ISO3166-1-Alpha-2"];
+          if (abs === "continents")
             clickedName = stats.countries?.[iso]?.continent || clickedName;
-          if (abs === "Regions")
+          if (abs === "regions")
             clickedName = stats.countries?.[iso]?.region || clickedName;
           emits("area-clicked", clickedName);
         }
@@ -207,13 +208,13 @@ function drawChoropleth() {
 
       const tooltipIso = getIso(feature);
       const isEstimatedRegion =
-        abs === "Regions"
+        abs === "regions"
           ? stats.regions?.[stats.countries?.[tooltipIso]?.region!]?.values[
               targetVariable!
             ]?.[targetYear!]?.estimate
           : false;
       const isEstimatedContinent =
-        abs === "Continents"
+        abs === "continents"
           ? stats.continents?.[stats.countries?.[tooltipIso]?.continent!]
               ?.values[targetVariable!]?.[targetYear!]?.estimate
           : false;
@@ -228,9 +229,9 @@ function drawChoropleth() {
         : `${shownDataNumber}${isEstimated ? "*" : ""}`;
 
       let name = feature.properties.name;
-      if (abs === "Continents")
+      if (abs === "continents")
         name = stats.countries?.[tooltipIso]?.continent || name;
-      if (abs === "Regions")
+      if (abs === "regions")
         name = stats.countries?.[tooltipIso]?.region || name;
 
       layer.bindTooltip(`<b>${name}</b><br/>${tooltipValue}`, { sticky: true });
