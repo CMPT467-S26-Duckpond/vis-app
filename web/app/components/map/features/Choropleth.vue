@@ -7,15 +7,16 @@ import type {
   AquastatYears
 } from "~~/server/utils/aquastatVars";
 import * as L from "leaflet";
+import type { AquastatAbstractions } from "~/pages/test.vue";
 
-const PANE_NAME = "choroplethPane";
-
-const { map, abstraction, targetVariable, targetYear } = defineProps<{
-  map: L.Map;
-  abstraction?: string;
-  targetVariable?: AquastatVariables;
-  targetYear?: AquastatYears;
-}>();
+const { map, abstraction, targetVariable, targetYear, aquastatData } =
+  defineProps<{
+    map: L.Map;
+    abstraction: AquastatAbstractions;
+    targetVariable?: AquastatVariables;
+    targetYear: AquastatYears;
+    aquastatData?: AquastatPayload;
+  }>();
 
 const emits = defineEmits<{
   (e: "area-clicked", name: string): void;
@@ -23,17 +24,6 @@ const emits = defineEmits<{
 
 const { data: boundariesData } = useAsyncData("worldBounds", () =>
   $fetch("/world_countries.geojson")
-);
-const { data: aquastatData } = useAsyncData(
-  "aquastatData",
-  () =>
-    $fetch<AquastatPayload>("/api/aquastat", {
-      query: {
-        targetVariable,
-        targetYear
-      }
-    }),
-  { watch: [() => targetVariable, () => targetYear] }
 );
 
 const choroplethLayerGroup = new L.LayerGroup();
@@ -48,23 +38,18 @@ onUnmounted(() => {
 });
 
 function drawChoropleth() {
-  if (
-    !map ||
-    !boundariesData.value ||
-    !aquastatData.value ||
-    !choroplethLayerGroup
-  )
+  if (!map || !boundariesData.value || !aquastatData || !choroplethLayerGroup)
     return;
 
   choroplethLayerGroup.clearLayers();
 
   const bounds: any = boundariesData.value;
-  const stats = aquastatData.value;
+  const stats = aquastatData;
   const abs = abstraction || "Countries";
   const measurement = targetVariable?.match(/\[(.+)\]\s*$/)?.[1] || "";
 
   const getIso = (feature: any) => {
-    let iso = feature.properties["ISO3166-1-Alpha-3"];
+    let iso = feature.properties["ISO3166-1-Alpha-2"];
     if (iso === "-99" || !iso) {
       const featureName = feature.properties.name;
       const found = Object.keys(stats.countries || {}).find(
@@ -79,19 +64,19 @@ function drawChoropleth() {
     if (!targetVariable || !targetYear) return null;
 
     const iso = getIso(feature);
-    if (abs === "Countries") {
+    if (abs === "countries") {
       const value =
         stats.countries?.[iso]?.values[targetVariable]?.[targetYear]?.value;
       return typeof value === "number" && value >= 0 ? value : null;
     }
-    if (abs === "Continents") {
+    if (abs === "continents") {
       const c = stats.countries?.[iso]?.continent;
       const value = c
         ? stats.continents?.[c]?.values[targetVariable]?.[targetYear]?.value
         : undefined;
       return typeof value === "number" && value > 0 ? value : null;
     }
-    if (abs === "Regions") {
+    if (abs === "regions") {
       const r = stats.countries?.[iso]?.region;
       const value = r
         ? stats.regions?.[r]?.values[targetVariable]?.[targetYear]?.value
@@ -166,8 +151,8 @@ function drawChoropleth() {
 
       return {
         fillColor: fillColor,
-        weight: abs === "Countries" ? 1 : 0, // hide borders to visually fuse regions/continents
-        opacity: abs === "Countries" ? 1 : 0,
+        weight: abs === "countries" ? 1 : 0, // hide borders to visually fuse regions/continents
+        opacity: abs === "countries" ? 1 : 0,
         color: "white",
         fillOpacity: 0.6
       };
@@ -186,18 +171,18 @@ function drawChoropleth() {
             const region = stats.countries?.[iso]?.region;
 
             if (
-              abs === "Continents" &&
+              abs === "continents" &&
               targetContinent &&
               targetContinent === continent
             ) {
               l.setStyle({ weight: 2, color: "#222", opacity: 1 });
             } else if (
-              abs === "Regions" &&
+              abs === "regions" &&
               targetRegion &&
               targetRegion === region
             ) {
               l.setStyle({ weight: 2, color: "#222", opacity: 1 });
-            } else if (abs === "Countries" && iso === targetIso) {
+            } else if (abs === "countries" && iso === targetIso) {
               l.setStyle({ weight: 2, color: "#222", opacity: 1 });
             }
           });
@@ -213,10 +198,10 @@ function drawChoropleth() {
         },
         click: () => {
           const iso = getIso(feature);
-          let clickedName = feature.properties.name;
-          if (abs === "Continents")
+          let clickedName = feature.properties["ISO3166-1-Alpha-2"];
+          if (abs === "continents")
             clickedName = stats.countries?.[iso]?.continent || clickedName;
-          if (abs === "Regions")
+          if (abs === "regions")
             clickedName = stats.countries?.[iso]?.region || clickedName;
           emits("area-clicked", clickedName);
         }
@@ -224,13 +209,13 @@ function drawChoropleth() {
 
       const tooltipIso = getIso(feature);
       const isEstimatedRegion =
-        abs === "Regions"
+        abs === "regions"
           ? stats.regions?.[stats.countries?.[tooltipIso]?.region!]?.values[
               targetVariable!
             ]?.[targetYear!]?.estimate
           : false;
       const isEstimatedContinent =
-        abs === "Continents"
+        abs === "continents"
           ? stats.continents?.[stats.countries?.[tooltipIso]?.continent!]
               ?.values[targetVariable!]?.[targetYear!]?.estimate
           : false;
@@ -245,9 +230,9 @@ function drawChoropleth() {
         : `${shownDataNumber}${measurement ? ` ${measurement}` : ""}${isEstimated ? "*" : ""}`;
 
       let name = feature.properties.name;
-      if (abs === "Continents")
+      if (abs === "continents")
         name = stats.countries?.[tooltipIso]?.continent || name;
-      if (abs === "Regions")
+      if (abs === "regions")
         name = stats.countries?.[tooltipIso]?.region || name;
 
       layer.bindTooltip(`<b>${name}</b><br/>${tooltipValue}`, { sticky: true });
@@ -255,7 +240,7 @@ function drawChoropleth() {
   }).addTo(choroplethLayerGroup);
 }
 
-watch([() => abstraction, boundariesData, aquastatData], drawChoropleth, {
+watch(() => [abstraction, boundariesData, aquastatData], drawChoropleth, {
   deep: true
 });
 </script>

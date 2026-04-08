@@ -1,14 +1,14 @@
-import fs from "node:fs/promises";
-import path from "node:path";
-import Papa from "papaparse";
-import {
-  AquastatVariables,
-  AquastatYears,
-  strIsYear
-} from "../utils/aquastatVars";
+import { AquastatVariables, AquastatYears } from "../utils/aquastatVars";
+import { getAquastatCSV } from "./aquastat.get";
 
 interface AquastatOptionsResponse {
   variables: AquastatVariables[];
+  abstractionMembers: {
+    regions: { label: string; value: string }[];
+    countries: { label: string; value: string }[];
+    continents: { label: string; value: string }[];
+  };
+
   years: AquastatYears[];
   minYear: AquastatYears;
   maxYear: AquastatYears;
@@ -17,21 +17,10 @@ interface AquastatOptionsResponse {
 }
 
 export default defineEventHandler(async () => {
-  const csvPath = path.resolve("server", "data", "aquastat_water_cleaned.csv");
-  const csvContent = await fs.readFile(csvPath, "utf8");
+  const { dataRecords, availableVariables, headerYears, isoRecords } =
+    await getAquastatCSV();
 
-  const parsed = Papa.parse<Record<string, string>>(csvContent, {
-    header: true,
-    skipEmptyLines: true
-  });
-
-  const records = parsed.data;
-  const availableVariables = Array.from(
-    new Set(records.map((record) => record.variable).filter(Boolean))
-  ).sort();
-
-  const yearColumns = Object.keys(records[0] || {}).filter(strIsYear);
-  const years = yearColumns.sort((a, b) => Number(a) - Number(b));
+  const years = headerYears.sort((a, b) => Number(a) - Number(b));
 
   if (!availableVariables || years.length === 0) {
     throw createError({
@@ -40,8 +29,42 @@ export default defineEventHandler(async () => {
     });
   }
 
+  const countryRecords = dataRecords.filter(
+    (record) => record.record["type"] === "country"
+  );
+
+  const countries = Array.from(
+    new Set(countryRecords.map((r) => r.record.name))
+  ).map((record) => ({
+    label: record,
+    value: isoRecords.find((i) => i.name === record)?.["alpha-2"]
+  }));
+
+  const regions = Array.from(
+    new Set(countryRecords.map((record) => record.record.region))
+  )
+    .filter((m) => Boolean(m))
+    .map((record) => ({
+      label: record,
+      value: record
+    }));
+
+  const continents = Array.from(
+    new Set(countryRecords.map((record) => record.record.continent))
+  )
+    .filter((m) => Boolean(m))
+    .map((record) => ({
+      label: record,
+      value: record
+    }));
+
   return {
     variables: availableVariables,
+    abstractionMembers: {
+      countries,
+      regions,
+      continents
+    },
     years: years,
     minYear: years[0]!,
     maxYear: years[years.length - 1]!,

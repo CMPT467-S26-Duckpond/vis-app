@@ -23,7 +23,7 @@ interface CountryResponse {
   values: VariableResponse;
   region: string;
   continent: string;
-  iso3: string;
+  iso2: string;
 }
 
 interface RegionResponse {
@@ -69,7 +69,7 @@ const querySchema = z4.object({
 
 type VariableMeta = z4.infer<typeof querySchema>;
 
-export default defineEventHandler(async (event) => {
+export async function getAquastatCSV() {
   const csvPath = path.resolve("server", "data", "aquastat_water_cleaned.csv");
   const csvContent = await fs.readFile(csvPath, "utf8");
   const isoPath = path.resolve("server", "data", "iso-3166.csv");
@@ -90,10 +90,48 @@ export default defineEventHandler(async (event) => {
     skipEmptyLines: true
   }).data;
 
+  const cleanedData = dataRecords.map((record) => {
+    let iso2 = "";
+
+    if (record.type === "country") {
+      // match exactly or formatted fallback (Bolivia (Plurinational State of) -> Bolivia, Plurinational State of)
+      let normalizedName = record.name.replace(" (", ", ").replace(")", "");
+      // manual adjustments to name to match
+      if (record.name === "Democratic Republic of the Congo")
+        normalizedName = "Congo, Democratic Republic of the";
+      if (record.name === "Republic of Moldova")
+        normalizedName = "Moldova, Republic of";
+      if (record.name === "Democratic People's Republic of Korea")
+        normalizedName = "Korea, Democratic People's Republic of";
+      if (record.name === "Republic of Korea")
+        normalizedName = "Korea, Republic of";
+      if (record.name === "United Republic of Tanzania")
+        normalizedName = "Tanzania, United Republic of";
+
+      const isoRecord = isoRecords.find(
+        (iso) => iso["name"] === record.name || iso["name"] === normalizedName
+      );
+      if (isoRecord) iso2 = isoRecord["alpha-2"];
+    }
+    return { record, iso2 };
+  });
+
   const availableVariables = Array.from(
     new Set(dataRecords.map((record) => record["variable"]).filter(Boolean))
   );
   const headerYears = Object.keys(dataRecords[0] || {}).filter(strIsYear);
+
+  return {
+    isoRecords,
+    dataRecords: cleanedData,
+    availableVariables,
+    headerYears
+  };
+}
+
+export default defineEventHandler(async (event) => {
+  const { dataRecords, isoRecords, availableVariables, headerYears } =
+    await getAquastatCSV();
 
   const query = await getValidatedQuery(event, querySchema.parse);
 
@@ -122,33 +160,7 @@ export default defineEventHandler(async (event) => {
     continents: {}
   };
 
-  const cleanedData = dataRecords.map((record) => {
-    let iso3 = "";
-
-    if (record.type === "country") {
-      // match exactly or formatted fallback (Bolivia (Plurinational State of) -> Bolivia, Plurinational State of)
-      let normalizedName = record.name.replace(" (", ", ").replace(")", "");
-      // manual adjustments to name to match
-      if (record.name === "Democratic Republic of the Congo")
-        normalizedName = "Congo, Democratic Republic of the";
-      if (record.name === "Republic of Moldova")
-        normalizedName = "Moldova, Republic of";
-      if (record.name === "Democratic People's Republic of Korea")
-        normalizedName = "Korea, Democratic People's Republic of";
-      if (record.name === "Republic of Korea")
-        normalizedName = "Korea, Republic of";
-      if (record.name === "United Republic of Tanzania")
-        normalizedName = "Tanzania, United Republic of";
-
-      const isoRecord = isoRecords.find(
-        (iso) => iso["name"] === record.name || iso["name"] === normalizedName
-      );
-      if (isoRecord) iso3 = isoRecord["alpha-3"];
-    }
-    return { record, iso3 };
-  });
-
-  const filtered = cleanedData.filter((r) =>
+  const filtered = dataRecords.filter((r) =>
     query.targetVariable.includes(r.record["variable"])
   );
 
@@ -163,16 +175,16 @@ export default defineEventHandler(async (event) => {
         const continent = r.record["continent"];
         const value = r.record[year];
 
-        if (r.record["type"] === "country" && r.iso3) {
-          payload.countries[r.iso3] ??= {
+        if (r.record["type"] === "country" && r.iso2) {
+          payload.countries[r.iso2] ??= {
             name,
             values: {},
             region,
             continent,
-            iso3: r.iso3
+            iso2: r.iso2
           };
-          payload.countries[r.iso3]!.values[variable] ??= {};
-          payload.countries[r.iso3]!.values[variable]![year] = {
+          payload.countries[r.iso2]!.values[variable] ??= {};
+          payload.countries[r.iso2]!.values[variable]![year] = {
             value
           };
         }
@@ -278,14 +290,14 @@ export default defineEventHandler(async (event) => {
 
   // insert empty entries for missing country data
   isoRecords.forEach((iso) => {
-    const iso3 = iso["alpha-3"];
-    if (iso3 && !payload.countries[iso3]) {
-      payload.countries[iso3] = {
+    const iso2 = iso["alpha-2"];
+    if (iso2 && !payload.countries[iso2]) {
+      payload.countries[iso2] = {
         name: iso["name"],
         values: makeEmpty(),
         region: iso["sub-region"],
         continent: iso["region"],
-        iso3: iso3
+        iso2: iso
       };
     }
   });
@@ -296,35 +308,35 @@ export default defineEventHandler(async (event) => {
     values: makeEmpty(),
     region: "Southern Europe",
     continent: "Europe",
-    iso3: "KOS"
+    iso2: "KOS"
   };
   payload.countries["NNC"] = {
     name: "Northern Cyprus",
     values: makeEmpty(),
     region: "Western Asia",
     continent: "Asia",
-    iso3: "NNC"
+    iso2: "NNC"
   };
   payload.countries["SOM"] = {
     name: "Somaliland",
     values: makeEmpty(),
     region: "Sub-Saharan Africa",
     continent: "Africa",
-    iso3: "SOM"
+    iso2: "SOM"
   };
   payload.countries["BAY"] = {
     name: "Baykonur Cosmodrome",
     values: makeEmpty(),
     region: "Central Asia",
     continent: "Asia",
-    iso3: "BAY"
+    iso2: "BAY"
   };
   payload.countries["SIA"] = {
     name: "Siachen Glacier",
     values: makeEmpty(),
     region: "Southern Asia",
     continent: "Asia",
-    iso3: "SIA"
+    iso2: "SIA"
   };
 
   // Taiwan (TWN) has empty region and continent values
@@ -338,7 +350,7 @@ export default defineEventHandler(async (event) => {
       values: makeEmpty(),
       region: "Eastern Asia",
       continent: "Asia",
-      iso3: "TWN"
+      iso2: "TWN"
     };
   }
 

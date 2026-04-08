@@ -17,8 +17,14 @@
   <LakeVis
     v-if="map && mapMode === 'lakeVis'"
     :map="toRaw(map)"
-    :waterConsumedKM3="500"
     @loading="isLoading = $event"
+    v-model:selected-lake="selectedLake"
+    :drainProgress
+    :targetVariable="targetVariable"
+    :targetYear="targetYear"
+    :abstractionMembers="abstractionMembers"
+    :abstraction="abstraction"
+    :aquastatData="aquastatData"
   />
 
   <!--
@@ -32,8 +38,9 @@
     v-if="map && mapMode === 'choropleth'"
     :map="toRaw(map)"
     :abstraction="abstraction"
-    targetVariable="Agricultural water withdrawal [10^9 m3/year]"
-    targetYear="2022"
+    :targetVariable="targetVariable"
+    :targetYear="targetYear"
+    :aquastatData="aquastatData"
     @area-clicked="(name) => emit('area-clicked', name)"
   />
 
@@ -41,23 +48,40 @@
 </template>
 
 <script setup lang="ts">
+import type { AquastatPayload } from "~~/server/api/aquastat.get";
+import type {
+  AquastatVariables,
+  AquastatYears
+} from "~~/server/utils/aquastatVars";
 import * as L from "leaflet";
-import type { MapModes } from "~/pages/test.vue";
+import type { AquastatAbstractions, MapModes } from "~/pages/test.vue";
 import LoadingSpan from "../ui/LoadingSpan.vue";
 import Choropleth from "./features/Choropleth.vue";
 import LakeVis from "./features/LakeVis.vue";
 
 const props = defineProps<{
   mapMode: MapModes;
-  abstraction?: string;
-  showPins?: boolean;
-  targetVariable?: string;
-  targetYear?: string;
+  abstraction: AquastatAbstractions;
+  targetVariable: AquastatVariables;
+  targetYear: AquastatYears;
+  abstractionMembers: string[];
+  drainProgress: number;
+  aquastatData?: AquastatPayload;
 }>();
+
 const emit = defineEmits<{ (e: "area-clicked", name: string): void }>();
 
 const mapRef = useTemplateRef("map");
 const map = ref<L.Map>();
+
+defineExpose({
+  map
+});
+
+const selectedLake = defineModel("selectedLake", {
+  type: String,
+  default: undefined
+});
 
 const isLoading = ref(false);
 
