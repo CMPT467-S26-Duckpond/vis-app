@@ -12,6 +12,16 @@ export default defineNuxtConfig({
     }
   },
 
+  nitro: {
+    publicAssets: [
+      // Leaflet requires some extra assets which aren't bundled by Nuxt by default.
+      // This instructs nuxt on how to find those assets to make sure they are included.
+      {
+        dir: "../node_modules/leaflet/dist/images",
+      }
+    ]
+  },
+
   ui: {
     fonts: true,
     colorMode: false
