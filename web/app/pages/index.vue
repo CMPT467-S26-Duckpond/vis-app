@@ -406,7 +406,7 @@ const abstractionOptions: CustomSelectItem[] = [
 const availableAbstractions = computed<CustomSelectItem[]>(() => {
   // No country allowed in lakeVis
   if (mapMode.value === "lakeVis") {
-    return abstractionOptions.filter((o) => o.value !== "countries");
+    return abstractionOptions.filter((o) => o.value !== "continents");
   } else {
     return abstractionOptions;
   }
