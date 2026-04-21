@@ -94,6 +94,7 @@
           @click="showMole = !showMole"
           :active="showMole"
           displayName="Toggle Mole View"
+          :disabled="mapMode !== 'choropleth'"
         />
         <SelectionIcon
           name="game-icons:wireframe-globe"
@@ -328,19 +329,6 @@ watch(selectedAbstraction, () => {
   abstractionMembers.value = [] as any; // Reset variable selection when changing abstraction
 });
 
-watch(mapMode, (newVal, oldVal) => {
-  // Filter vars based on available
-  selectedVariable.value = availableUsageVars.value.includes(
-    selectedVariable.value
-  )
-    ? selectedVariable.value
-    : "Agricultural water withdrawal [10^9 m3/year]";
-});
-
-watch(selectedAbstraction, () => {
-  abstractionMembers.value = [] as any; // Reset variable selection when changing abstraction
-});
-
 function onLakeUpdate(newLake: CustomSelectItem) {
   selectedLake.value = newLake.value;
   if (map.value?.map) {
@@ -356,12 +344,7 @@ function onLakeUpdate(newLake: CustomSelectItem) {
   }
 }
 
-watch(mapMode, (newMode, oldMode) => {
-  if (newMode === "choropleth" && oldMode === "lakeVis") {
-    selectedLake.value = undefined; // Reset selected lake when switching off lakeVis mode
-  }
-});
-
+const selectedArea = ref<string | undefined>();
 const WATER_CONSUMPTION_RATE_VARS: AquastatVariables[] = [
   "Agricultural water withdrawal [10^9 m3/year]",
   "Industrial water withdrawal [10^9 m3/year]",
@@ -380,6 +363,30 @@ const availableUsageVars = computed(() => {
   }
   return aquastatOptions.value?.variables || [];
 });
+
+watch(
+  mapMode,
+  (newMode, oldMode) => {
+    if (newMode === "choropleth" && oldMode === "lakeVis") {
+      selectedLake.value = undefined; // Reset selected lake when switching off lakeVis mode
+    }
+
+    if (newMode === "lakeVis" && oldMode === "choropleth") {
+      selectedArea.value = undefined;
+      showMole.value = false; // Hide mole view when switching to lakeVis, as it may not be relevant and can be overwhelming with the lake visualization
+    }
+
+    // Filter vars based on available
+    selectedVariable.value = availableUsageVars.value.includes(
+      selectedVariable.value
+    )
+      ? selectedVariable.value
+      : "Agricultural water withdrawal [10^9 m3/year]";
+  },
+  {
+    immediate: true
+  }
+);
 
 const abstractionMemberValues = computed(() => {
   return abstractionMembers.value.map((m) => m.value);
@@ -417,17 +424,6 @@ watch(availableAbstractions, (newVal) => {
     selectedAbstraction.value = newVal[0]?.value as AquastatAbstractions;
   }
 });
-
-const selectedArea = ref<string | undefined>();
-watch(
-  () => mapMode.value,
-  (newMode) => {
-    if (newMode === "lakeVis") {
-      selectedArea.value = undefined;
-    }
-  },
-  { immediate: true }
-);
 
 watch(selectedVariable, (newVar) => {
   selectedArea.value = undefined; // Reset selected area when variable changes, as the data and thus the areas may be different

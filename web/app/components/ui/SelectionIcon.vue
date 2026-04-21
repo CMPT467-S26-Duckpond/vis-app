@@ -3,11 +3,13 @@
     <UIcon
       :name="name"
       class="size-7"
-      @click="$emit('click')"
+      @click="!disabled && $emit('click')"
       :class="{
-        'text-neutral-400': !active,
-        'text-primary-500': active,
-        'hover:text-primary-300': !active
+        'cursor-not-allowed': disabled,
+        'text-neutral-300': disabled,
+        'text-neutral-400': !active && !disabled,
+        'text-primary-500': active && !disabled,
+        'hover:text-primary-300': !active && !disabled
       }"
     />
   </span>
@@ -18,6 +20,7 @@ defineProps<{
   name: string;
   displayName?: string;
   active?: boolean;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{
