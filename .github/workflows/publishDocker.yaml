@@ -5,8 +5,7 @@ name: Package and Release Docker Image for Nuxt
 
 # Push to web app when merged from PR
 on:
-  pull_request_target:
-    types: [closed]
+  push:
     branches:
       - main
 
