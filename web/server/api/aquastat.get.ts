@@ -1,5 +1,3 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import Papa from "papaparse";
 import z4 from "zod/v4";
 import {
@@ -70,11 +68,19 @@ const querySchema = z4.object({
 type VariableMeta = z4.infer<typeof querySchema>;
 
 export async function getAquastatCSV() {
-  const csvPath = path.resolve("server", "data", "aquastat_water_cleaned.csv");
-  const csvContent = await fs.readFile(csvPath, "utf8");
-  const isoPath = path.resolve("server", "data", "iso-3166.csv");
-  const isoContent = await fs.readFile(isoPath, "utf8");
-  const dataRecords = Papa.parse<AquastatRowEntry>(csvContent, {
+  const assetStorage = useStorage("assets:server");
+  const csvContent = await assetStorage.get("aquastat_water_cleaned.csv");
+  const isoContent = await assetStorage.get("iso-3166.csv");
+
+  if (!csvContent || !isoContent) {
+    throw createError({
+      statusCode: 500,
+      message: "Failed to load dataset files."
+    });
+  }
+
+
+  const dataRecords = Papa.parse<AquastatRowEntry>(csvContent.toString(), {
     header: true,
     skipEmptyLines: true,
     transform(value, header) {
@@ -85,7 +91,7 @@ export async function getAquastatCSV() {
       return value;
     }
   }).data;
-  const isoRecords = Papa.parse<any>(isoContent, {
+  const isoRecords = Papa.parse<any>(isoContent.toString(), {
     header: true,
     skipEmptyLines: true
   }).data;
