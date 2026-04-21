@@ -1,0 +1,19 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: 467mongo
+    # ports:
+    # - "3001:27017"
+    restart: "unless-stopped"
+    volumes:
+      - "../data/scripts/467projdata.archive.gz:/restore/467projdata.archive.gz:ro"
+      - "../data/scripts/mongo_restore.sh:/docker-entrypoint-initdb.d/mongo_restore.sh:ro"
+    init: true
+
+  web:
+    build: .
+    container_name: 467web
+    environment:
+      NUXT_MONGO_URI: "mongodb://mongo:27017/467projdata"
+    ports:
+      - "3000:80"
