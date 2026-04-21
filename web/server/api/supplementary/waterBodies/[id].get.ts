@@ -49,6 +49,6 @@ export default defineCachedEventHandler(
     return body.toObject();
   },
   {
-    maxAge: 24 * 60 * 60 * 1000 // Cache for 24 hours
+    maxAge: 60 * 60 // Cache for 1 hour
   }
 );
