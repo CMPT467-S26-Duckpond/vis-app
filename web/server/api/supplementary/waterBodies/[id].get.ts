@@ -15,35 +15,40 @@ const queryParamSchema = z4.object({
   bustBathymetryCache: z4.coerce.boolean().default(false)
 });
 
-export default defineEventHandler(async (event) => {
-  const { id } = await getValidatedRouterParams(
-    event,
-    getWaterBodyRouteSchema.parse
-  );
+export default defineCachedEventHandler(
+  async (event) => {
+    const { id } = await getValidatedRouterParams(
+      event,
+      getWaterBodyRouteSchema.parse
+    );
 
-  const { includeBathymetry, bustBathymetryCache } = await getValidatedQuery(
-    event,
-    queryParamSchema.parse
-  );
+    const { includeBathymetry, bustBathymetryCache } = await getValidatedQuery(
+      event,
+      queryParamSchema.parse
+    );
 
-  const body = await MapWaterBody.findById(id);
+    const body = await MapWaterBody.findById(id);
 
-  if (!body) {
-    throw createError({
-      statusCode: 404,
-      message: "Water body not found"
-    });
+    if (!body) {
+      throw createError({
+        statusCode: 404,
+        message: "Water body not found"
+      });
+    }
+
+    if (!includeBathymetry && body.depthBathymetry) {
+      body.depthBathymetry = undefined;
+    }
+
+    if (includeBathymetry && (!body.depthBathymetry || bustBathymetryCache)) {
+      const bathymetryData = await getBathymetryData(body as MapWaterBodyType);
+      body.depthBathymetry = bathymetryData;
+      await body.save();
+    }
+
+    return body.toObject();
+  },
+  {
+    maxAge: 24 * 60 * 60 * 1000 // Cache for 24 hours
   }
-
-  if (!includeBathymetry && body.depthBathymetry) {
-    body.depthBathymetry = undefined;
-  }
-
-  if (includeBathymetry && (!body.depthBathymetry || bustBathymetryCache)) {
-    const bathymetryData = await getBathymetryData(body as MapWaterBodyType);
-    body.depthBathymetry = bathymetryData;
-    await body.save();
-  }
-
-  return body.toObject();
-});
+);
