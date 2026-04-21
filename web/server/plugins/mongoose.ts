@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-import MapWaterBody from "../models/MapWaterBody";
-
 export default defineNitroPlugin(async (nitro) => {
   const config = useRuntimeConfig();
 
@@ -17,6 +15,3 @@ export default defineNitroPlugin(async (nitro) => {
     console.log("DB connection closed.");
   });
 });
-
-19470878314;
-754918945.4453022;
