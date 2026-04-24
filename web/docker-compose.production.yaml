@@ -24,7 +24,7 @@ services:
       NUXT_MONGO_URI: "mongodb://mongo:27017/467projdata"
     mem_limit: '1GiB'
     cpu_percent: 10
-		read_only: true
+    read_only: true
     dns:
       - 1.1.1.1
       - 1.0.0.1
